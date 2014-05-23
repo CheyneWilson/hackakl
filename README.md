@@ -4,7 +4,7 @@ hackakl
 Hackakl 2014
 
 
-== Installation
+## Installation
 
 https://pip.pypa.io/en/latest/installing.html
 
@@ -16,10 +16,14 @@ git clone git@github.com:CheyneWilson/hackakl.git
 
 cd hackakl
 
+virtualenv venv
+
 source venv/bin/activate
 
 pip install -r mysite/conf/requirements.txt
 
 # run the python app
+
+cd mysite
 python manage.py runserver
 ```
