@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en" > <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang="en" > <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title>Where are we going?</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/bootstrap.min.css' %}">
+    <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/font-awesome.min.css' %}">
+    <!-- <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/angular-motion.css' %}"> -->
+    <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/bootstrap-additions.css' %}">
+    <!-- <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/libraries.min.css' %}"> -->
+
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="stylesheet" type="text/css" href="{%static 'hackakl/style/main.css' %}">
+
+</head>
+    <body ng-app="chess">
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Where are we going?</a>
+                </div>
+
+                <div ng-controller="Login" class="navbar-collapse collapse">
+                    {% if user.is_authenticated %}
+                    <div class="navbar-right navbar-form">
+                        <button type="button" class="btn btn-success" data-template="{% static 'chess/modal/newgame.html' %}"
+                             bs-modal="modal" data-placement="center" data-container="#modal-location">
+                            Start New Game
+                        </button>
+                        <button ng-controller="ChangeGame" type="button" class="btn btn-neutral" ng-model="selectedIcon" data-placeholder="Load Game"
+                            ng-options="icon.value as icon.label for icon in icons" bs-select >
+                            Action <span class="caret"></span>
+                        </button>
+                        <button type="button"  class="btn btn-danger" ng-click="logout()">Sign out</button>
+                    </div>
+                    {% else %}
+                    <form class="navbar-form navbar-right" ng-submit="login()">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input ng-model="formData.username" type="text" placeholder="Username" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input ng-model="formData.password" type="password" placeholder="Password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">Sign in</button>
+                            <label style="color: white; display: inline-block; padding: 0px 3px 0 2px;">OR</label>
+                            <!-- <a href="register" class="btn btn-warning">Register</a> -->
+
+                        <button type="button" class="btn btn-warning" data-template="{% static 'chess/modal/register.html' %}"
+                             bs-modal="modal" data-placement="center" data-container="#modal-location">
+                            Register
+                        </button>
+                        </div>
+                    </form>
+                    {% endif %}
+
+                </div><!--/.navbar-collapse -->
+            </div>
+        </div>
+
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- Add your site or application content here -->
+
+        <div class="wrapper">
+            <!-- Location in html the new game modal is injected -->
+            <div id="modal-location"> </div>
+
+            <div class="container">
+                <div class="row" ng-controller="DrawBoard">
+                    <div class="col-lg-12">
+                        <div class="map">
+
+<iframe
+  width="450"
+  height="250"
+  frameborder="0" style="border:0"
+  src="https://www.google.com/maps/embed/v1/search?key=API_KEY&q=record+stores+in+Seattle">
+</iframe>
+
+<!--                                 https://www.google.com/maps/embed/v1/view
+                              ?key=API_KEY
+                              &center=37.4218,-122.0840
+                              &zoom=18
+                              &maptype=satellite
+ -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="row" ng-controller="DrawBoard">
+                    <div class="col-lg-6">
+
+                    </div>
+                    <div class="col-lg-6">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var route_code = 2741ML4710;
+    </script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="{% static 'hackakl/js/contrib/jQuery.js' %}"></script>
+
+    <!-- <script src="{% static "chess/contrib/require.js"  %}"  data-main="{% static "chess/js/main.js" %}" ></script> -->
+    <script type="text/javascript" src="{% static 'hackakl/js/main.js' %}"></script>
+<!--
+    <script src="//code.angularjs.org/1.2.13/angular.min.js"></script>
+    <script src="//code.angularjs.org/1.2.13/angular-animate.min.js"></script>
+    <script src="//code.angularjs.org/1.2.13/angular-sanitize.min.js"></script>
+    <script src="//mgcrea.github.io/angular-strap/dist/angular-strap.js" ></script>
+    <script type="text/javascript">
+    <script src="//mgcrea.github.io/angular-strap/dist/angular-strap.tpl.js" ></script>
+-->
+
+    <!-- <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script> -->
+<!--
+    <script type="text/javascript" src="{% static 'chess/contrib/angular.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chess/contrib/angular-animate.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chess/contrib/angular-sanitize.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chess/contrib/angular-strap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chess/contrib/angular-strap.tpl.js' %}"></script>
+-->
+
+</body>
+</html>
