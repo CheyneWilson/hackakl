@@ -219,7 +219,10 @@ class Route(APIView):
                     route_data = json.loads(r.content)
                     raw_shape = route_data["response"]
 
-                    geo_data = geojson.dumps(raw_shape)
+                    geo_data_string = geojson.dumps(raw_shape)
+
+                    # FIXEME: HACK - this is silly restructing it so many times...
+                    geo_data = json.loads(geo_data_string)
 
                     return Response(geo_data)
                 else:
