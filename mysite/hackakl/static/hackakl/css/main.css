@@ -88,6 +88,10 @@ body {
     top: 0;
     width: 41.6%;
   }
+  .row-offcanvas.active .sidebar-offcanvas{
+    min-width: 260px;
+  }
+
   #sidebar {
     background-color:#3b3b3b;
     padding-top: 0;
