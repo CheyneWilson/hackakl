@@ -5,7 +5,26 @@
 	/*top: 50px;*/
 }
 
+#routelist li.active {
+  background: #FAAC58;
+}
 
+#routelist li.favourite {
+  background: #A9D0F5;
+}
+
+#routelist li.favourite.active {
+  background: #FAAC58;
+}
+
+li.favourite:before {
+    content: "\f005";
+    font-family: FontAwesome;
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin: 10px 10px;
+}
 
 .text-center {
   padding-top: 20px;

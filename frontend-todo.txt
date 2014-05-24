@@ -1,0 +1,14 @@
+# Frontend Features
+
+## TODO
+- Route layer toggling via sidebar entry click
+- Toggling of bus layer, regardless of route
+
+
+## DONE 
+- Routes styling
+- Bus icon styling
+- If url includes a route var, extract and display that route
+- Show location of user as a blue dot
+- Clustering of bus icons if over a certain density 
+- Next route button
