@@ -39,7 +39,7 @@ def index(request):
 
 
 def favourite(request):
-    return render(request, 'hackakl/index.html')
+    return render(request, 'hackakl/favourites.html')
 
 
 def _fav_list(username):
