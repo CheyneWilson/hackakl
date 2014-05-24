@@ -1,18 +1,16 @@
 $("#route-number").val("TEST");
 
-var map = L.map('map').setView([39.74739, -105], 13);
+var map = L.map('map').setView([-36.848460 , 174.763332], 13);
 
 L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 18,
 }).addTo(map);
 
-routes = {};
+routeLayers = {};
 
 function loadRoute() {
 	var routeNum = $("#route-number").val();
-
-	// expect a feature of type LineString that describes a route
 
 	var routeURL = "/dummyroute/"+routeNum;
 
@@ -21,7 +19,7 @@ function loadRoute() {
 	  //url: "/static/hackakl/data/bus-route.json",
 	  url : routeURL,
 	  data: null,
-	  success: displayGeoJson
+	  success: renderRoute
 	});
 };
 
@@ -38,11 +36,25 @@ function loadBuses(){
 }
 
 function renderRoute(data, textStatus, jqXHR ){
-	routes['test'] = L.geoJson(data, {
+	var route_code = data.properties.route_code;
+
+	if(routeLayers[route_code]){
+		map.removeLayer(routeLayers[route_code]);
+		delete routeLayers[data.properties.route_code];
+	}
+
+	var geoJsonRouteLayer =  L.geoJson(data, {
 		pointToLayer: function (feature, latlng) {
 			return L.marker(latlng);
 		}
-	}).addTo(map);
+	});
+
+	// var geoJsonRouteLayer =  L.geoJson(data);
+
+	routeLayers[route_code] = geoJsonRouteLayer;
+
+	geoJsonRouteLayer.addTo(map);
+	alert('Route loaded and rendered');
 }
 
 function renderBuses(data, textStatus, jqXHR) {

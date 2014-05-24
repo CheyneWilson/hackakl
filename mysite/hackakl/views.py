@@ -200,11 +200,11 @@ class DummyRtBuses(APIView):
             #TODO: What about direction?
             {
                 "type": "Point",
-                "coordinates": [100.0, 0.0]
+                "coordinates": [-36.848460 , 174.763332]
             },
             {
                 "type": "Point",
-                "coordinates": [100.0, 2.0]
+                "coordinates": [-36.848860 , 174.763032]
             },
         ]
 
