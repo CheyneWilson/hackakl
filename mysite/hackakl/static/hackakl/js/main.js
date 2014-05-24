@@ -102,7 +102,8 @@ function loadRoute(route_code) {
 
 	console.log("loadRoute: "+route_code);
 
-	var routeURL = "/dummyroute/"+route_code;
+	// var routeURL = "/dummyroute/"+route_code;
+	var routeURL = "/realroute/"+route_code;
 
 	$.ajax({
 	  dataType: "json",

@@ -72,6 +72,7 @@ def _fav_list(username):
 
 
 class ListRoutesForStop(APIView):
+    permission_classes = (AllowAny,)
 
     def get(self, request, stop_id):
         """
@@ -200,8 +201,8 @@ class EditFavourites(APIView):
 
 class Route(APIView):
     """
-Returns a geodata for a route
-"""
+    Returns a geodata for a route
+    """
 
     def get(self, request, route_id):
         """
@@ -234,8 +235,8 @@ Returns a geodata for a route
                     for point in raw_shape:
                         coords.append(
                             [
-                                point["shape_pt_lat"],
-                                point["shape_pt_lon"]
+                                point["shape_pt_lon"],
+                                point["shape_pt_lat"]
                             ]
                         )
 
@@ -244,7 +245,15 @@ Returns a geodata for a route
                         "coordinates": coords
                     }
 
-                    return Response(lineString)
+                    resp = {
+                        "geometry": lineString,
+                        "type": "Feature",
+                        "properties": {
+                            "route_code": route_id
+                        }
+                    }
+
+                    return Response(resp)
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -261,6 +270,7 @@ class VehicleData(APIView):
     """
     Returns the realtime coordinates for a
     """
+    permission_classes = (AllowAny,)
 
     def get(self, request, route_id):
         """
@@ -310,6 +320,8 @@ class DummyRoute(APIView):
     """
     A mock used for testing. Returns the dummy data in the format expected by the front end.
     """
+    permission_classes = (AllowAny,)
+
     def get(self, request, route_id):
         """
         Returns a LineString for a route
@@ -322,6 +334,8 @@ class DummyRtBuses(APIView):
     """
     A mock used for testing. Returns the dummy data in the format expected by the front end.
     """
+    permission_classes = (AllowAny,)
+
     def get(self, request, route_id):
         """
         Returns the coordinates of all buses on a route
