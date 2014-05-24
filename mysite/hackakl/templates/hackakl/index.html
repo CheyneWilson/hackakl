@@ -13,16 +13,16 @@
 
     <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/bootstrap.min.css' %}">
     <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/font-awesome.min.css' %}">
-    <!-- <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/angular-motion.css' %}"> -->
     <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/bootstrap-additions.css' %}">
+    <!-- <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/angular-motion.css' %}"> -->
     <!-- <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/libraries.min.css' %}"> -->
 
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <link rel="stylesheet" type="text/css" href="{%static 'hackakl/css/main.css' %}">
 
-     <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-
-     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <!-- leaflet -->
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 
 </head>
     <body ng-app="chess">
@@ -38,8 +38,15 @@
                     <a class="navbar-brand" href="#">Where are we going?</a>
                 </div>
 
-                <div ng-controller="Login" class="navbar-collapse collapse">
-                    {% if user.is_authenticated %}
+               <div ng-controller="Login" class="navbar-collapse collapse">
+                    <div class="navbar-right navbar-form">
+                        <div class="form-group">
+                          <input id="route-number" type="text" class="form-control" placeholder="Search">
+                        </div>
+                        <button type="submit" class="btn btn-default" onclick="searchRoute()">Submit</button>
+                    </div>
+
+                    <!--  {% if user.is_authenticated %}
                     <div class="navbar-right navbar-form">
                         <button type="button" class="btn btn-success" data-template="{% static 'chess/modal/newgame.html' %}"
                              bs-modal="modal" data-placement="center" data-container="#modal-location">
@@ -63,7 +70,7 @@
                         <div class="form-group">
                             <button type="submit" class="btn btn-success">Sign in</button>
                             <label style="color: white; display: inline-block; padding: 0px 3px 0 2px;">OR</label>
-                            <!-- <a href="register" class="btn btn-warning">Register</a> -->
+                            <!- <a href="register" class="btn btn-warning">Register</a> ->
 
                         <button type="button" class="btn btn-warning" data-template="{% static 'chess/modal/register.html' %}"
                              bs-modal="modal" data-placement="center" data-container="#modal-location">
@@ -71,7 +78,7 @@
                         </button>
                         </div>
                     </form>
-                    {% endif %}
+                    {% endif %} -->
 
                 </div><!--/.navbar-collapse -->
             </div>
@@ -84,52 +91,17 @@
         <!-- Add your site or application content here -->
 
         <div class="wrapper">
-            <!-- Location in html the new game modal is injected -->
-            <div id="modal-location"> </div>
+            
+            <div id="map">
 
-            <div class="container">
-                <div class="row" ng-controller="DrawBoard">
-                    <div class="col-lg-12">
-                        <div class="map">
-
-<!-- <iframe
-  width="450"
-  height="250"
-  frameborder="0" style="border:0"
-  src="https://www.google.com/maps/embed/v1/search?key=API_KEY&q=record+stores+in+Seattle">
-</iframe> -->
-
-<!--                                 https://www.google.com/maps/embed/v1/view
-                              ?key=API_KEY
-                              &center=37.4218,-122.0840
-                              &zoom=18
-                              &maptype=satellite
- -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-                <div class="row" ng-controller="DrawBoard">
-                    <div class="col-lg-6">
-
-                    </div>
-                    <div class="col-lg-6">
-
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
-    // <script type="text/javascript">
-    //     var route_code = 2741ML4710;
-    // </script>
-
-
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/javascript" src="{% static 'hackakl/js/jQuery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'hackakl/js/jquery.js' %}"></script>
 
     <!-- <script src="{% static "chess/contrib/require.js"  %}"  data-main="{% static "chess/js/main.js" %}" ></script> -->
     <script type="text/javascript" src="{% static 'hackakl/js/main.js' %}"></script>

@@ -1,19 +1,25 @@
-// //
+var map = L.map('map').setView([39.74739, -105], 13);
 
-// // TODO: Call a webserivee that
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+}).addTo(map);
 
-// /*
-//  * Creates a map and returns the HTML of a route
-//  * The stop is optional
-//  */
+function searchRoute() {
+	var routeNum = $("#route-number").val();
 
-// var AT_API_KEY = "242e03b2-9f69-4053-acfa-68059fd1797b";
-// var GOOGLE_MAPS_API_KEY = "";
+	$.ajax({
+	  dataType: "json",
+	  url: "/static/hackakl/data/bus-locations.json",
+	  data: null,
+	  success: displayGeoJson
+	});
+};
 
-// var displayRouteMap = function(route, stop) {
-
-
-// }
-
-
-
+function displayGeoJson(data, textStatus, jqXHR ){
+	var layer = L.geoJson(data, {
+		pointToLayer: function (feature, latlng) {
+			return L.marker(latlng);
+		}
+	}).addTo(map);
+}
