@@ -5,21 +5,22 @@
 	/*top: 50px;*/
 }
 
-#routelist li.active {
+.favouritelist .active {
   background: #FAAC58;
 }
 
-#routelist li.favourite {
+.favouritelist .favourite {
   background: #A9D0F5;
 }
 
-#routelist li.favourite.active {
+.favouritelist .favourite.active {
   background: #FAAC58;
 }
 
-li.favourite:before {
+.favourite:before {
     content: "\f005";
     font-family: FontAwesome;
+    font-style: normal;
     width: 20px;
     height: 20px;
     float: left;
@@ -29,14 +30,23 @@ li.favourite:before {
 .text-center {
   padding-top: 20px;
 }
+
+.wrapper {
+    padding: 0 15px;
+}
+
 .col-xs-12 {
   background-color: #fff;
+  padding: 0;
 }
+
 #sidebar {
-  height: 100%;
-  padding-right: 0;
-  padding-top: 20px;
+    height: 100%;
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
+
 #sidebar .nav {
   width: 95%;
 }
@@ -80,7 +90,8 @@ body {
   }
   #sidebar {
     background-color:#3b3b3b;
-    padding-top:0;
+    padding-top: 0;
+    margin-left: -20px; /* hacked in because we're not builing bootsrap from source */
   }
   #sidebar .nav>li {
     color: #ddd;
@@ -109,6 +120,10 @@ body {
   #sidebar .nav a:hover .caret{
     border-top-color: #fff;
     border-bottom-color: #fff;
+  }
+
+  #sidebar h4 {
+    color: #ddd;
   }
 }
 
@@ -141,11 +156,22 @@ body {
     display: table-cell;
 }
 
+.routelist .favourite-button,
+.routelist .bootstrap-checkbox,
 .routelist input {
-    margin: 10px;
     display: table-cell;
+    padding: 0 5px;
+    vertical-align: middle;
 }
 
-.routelist li a {
+.routelist li {
     display: table-row;
+}
+
+.routelistheader {
+    font-size: 13px;
+}
+
+.right {
+    float: right;
 }

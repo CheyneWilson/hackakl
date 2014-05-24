@@ -80,8 +80,8 @@ function createSidebarRouteElement(route_code, classes){
 
 	a.data("route_code", route_code);
 
-	$('#routelist').append(
-	    li.append(a));    
+	$('#favouriteList').append(
+	    li.append(a));
 
 	a.click(function(){
 		var route_code = a.data("route_code");
@@ -194,7 +194,7 @@ function renderBuses(data, textStatus, jqXHR) {
 	});
 
 	// display each bus with the bus icon
-	var geoLayer = L.geoJson(data, { 
+	var geoLayer = L.geoJson(data, {
 		pointToLayer: function (feature, latlng) {
 			return L.marker(latlng, {icon: busIcon});
 		},

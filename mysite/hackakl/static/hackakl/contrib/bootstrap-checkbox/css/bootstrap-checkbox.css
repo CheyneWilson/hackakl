@@ -69,6 +69,7 @@ label.bootstrap-checkbox.disabled{
 	cursor:not-allowed;
 }
 
+/* From here and below the checkboxes have been customised to work with fontawesome instead */
 [class^="cb-icon-"],
 [class*=" cb-icon-"] {
 	display: inline-block;
@@ -78,39 +79,40 @@ label.bootstrap-checkbox.disabled{
 	*margin-right: .3em;
 	line-height: 14px;
 	vertical-align: text-top;
-	background-image: url("../img/icons.png");
-	background-position: 14px 14px;
-	background-repeat: no-repeat;
 }
 
-.bootstrap-checkbox button.btn > span.cb-icon-check,
-.bootstrap-checkbox.disabled button.btn:hover > span.cb-icon-check,
-.bootstrap-checkbox.disabled button.btn:active > span.cb-icon-check{
-	background-position: 0 -1px;
-}
-.bootstrap-checkbox button.btn:hover > span.cb-icon-check,
-.bootstrap-checkbox button.btn:focus > span.cb-icon-check,
-.bootstrap-checkbox button.btn:active > span.cb-icon-check{
-	background-position: 0 -25px;
-}
-.bootstrap-checkbox button.btn > span.cb-icon-check-empty,
-.bootstrap-checkbox.disabled button.btn:hover > span.cb-icon-check-empty,
-.bootstrap-checkbox.disabled button.btn:active > span.cb-icon-check-empty{
-	background-position: -24px -1px;
-}
-.bootstrap-checkbox button.btn:hover > span.cb-icon-check-empty,
-.bootstrap-checkbox button.btn:focus > span.cb-icon-check-empty,
-.bootstrap-checkbox button.btn:active > span.cb-icon-check-empty{
-	background-position: -24px -25px;
+.cb-icon-check:before {
+    content: "\f046";
+    font-family: FontAwesome;
+    font-style: normal;
+    width: 20px;
+    height: 20px;
+	font-size: 19px;
 }
 
-.bootstrap-checkbox button.btn > span.cb-icon-check-indeterminate,
-.bootstrap-checkbox.disabled button.btn:hover > span.cb-icon-check-indeterminate,
-.bootstrap-checkbox.disabled button.btn:active > span.cb-icon-check-indeterminate{
-	background-position: -48px -1px;
+.cb-icon-check-empty:before {
+    content: "\f096";
+    font-family: FontAwesome;
+    font-style: normal;
+    width: 20px;
+    height: 20px;
+	font-size: 19px;
 }
-.bootstrap-checkbox button.btn:hover > span.cb-icon-check-indeterminate,
-.bootstrap-checkbox button.btn:focus > span.cb-icon-check-indeterminate,
-.bootstrap-checkbox button.btn:active > span.cb-icon-check-indeterminate{
-	background-position: -48px -25px;
+
+.star .cb-icon-check:before {
+    content: "\f005";
+    font-family: FontAwesome;
+    font-style: normal;
+    width: 20px;
+    height: 20px;
+    font-size: 23px;
+}
+
+.star .cb-icon-check-empty:before {
+    content: "\f006";
+    font-family: FontAwesome;
+    font-style: normal;
+    width: 20px;
+    height: 20px;
+    font-size: 23px;
 }
