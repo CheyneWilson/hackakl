@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import json
+import geojson
 
 import requests
 
@@ -170,9 +171,11 @@ class Route(APIView):
                     route_data = json.loads(r.content)
                     raw_shape = route_data["response"]
 
+                    geo_data = geojson.dumps(raw_shape)
+
                     #geo_data = GeoJSONSerializer().serialize(raw_shape.objects.all(),
                     #                                         use_natural_keys=True)
-                    geo_data = {}
+                    #geo_data = {}
                     return Response(geo_data)
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
