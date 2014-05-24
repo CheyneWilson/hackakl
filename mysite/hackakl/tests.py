@@ -1,3 +1,21 @@
-from django.test import TestCase
+from unittest import TestCase
 
-# Create your tests here.
+
+class TestListFavourites(TestCase):
+    pass
+
+
+class TestEditFavourites(TestCase):
+    pass
+
+
+class TestRoute(TestCase):
+    pass
+
+
+class RouteName(TestCase):
+    pass
+
+
+class DummyRtBuses(TestCase):
+    pass
