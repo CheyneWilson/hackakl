@@ -1,3 +1,5 @@
+$("#route-number").val("TEST");
+
 var map = L.map('map').setView([39.74739, -105], 13);
 
 L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -5,15 +7,19 @@ L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
 }).addTo(map);
 
+routes = {};
+
 function loadRoute() {
 	var routeNum = $("#route-number").val();
 
 	// expect a feature of type LineString that describes a route
 
+	var routeURL = "/dummyroute/"+routeNum;
+
 	$.ajax({
 	  dataType: "json",
-	  // dummy url = localhost:8000/
-	  url: "/static/hackakl/data/bus-route.json",
+	  //url: "/static/hackakl/data/bus-route.json",
+	  url : routeURL,
 	  data: null,
 	  success: displayGeoJson
 	});
@@ -32,7 +38,7 @@ function loadBuses(){
 }
 
 function renderRoute(data, textStatus, jqXHR ){
-	var layer = L.geoJson(data, {
+	routes['test'] = L.geoJson(data, {
 		pointToLayer: function (feature, latlng) {
 			return L.marker(latlng);
 		}
