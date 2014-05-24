@@ -38,7 +38,14 @@ def index(request):
     return render(request, 'hackakl/index.html')
 
 
-def get_fav_list(username):
+def favourite(request):
+    return render(request, 'hackakl/index.html')
+
+
+def _fav_list(username):
+    """
+    A helper function that returns the favourite list for a user
+    """
     fav_list = Favourite.objects.filter(Q(user__username=username))
     serializer = FavouriteModelSerializer(fav_list, many=True)
     return Response(serializer.data)
@@ -55,7 +62,7 @@ class ListFavourites(APIView):
         Lists a users favourite routes
         """
 
-        return get_fav_list(username)
+        return _fav_list(username)
 
 
 class EditFavourites(APIView):
@@ -102,7 +109,7 @@ class EditFavourites(APIView):
         # TODO: We could add more details gathered from calling the backend API?
         # knowing this isn't enough, lookup the api for more details
 
-        return get_fav_list(username)
+        return _fav_list(username)
 
     def delete(self, request, username, route_code):
         """
@@ -117,7 +124,7 @@ class EditFavourites(APIView):
         else:
             fav.delete()
 
-        return get_fav_list(username)
+        return _fav_list(username)
 
 
 class Route(APIView):
@@ -203,16 +210,11 @@ class DummyRtBuses(APIView):
             #TODO: What about direction?
             {
                 "type": "Point",
-                "coordinates": [100.0, 0.0]
+                "coordinates": [174.763332, -36.848460]
             },
             {
                 "type": "Point",
-                "coordinates": [100.0, 2.0],
-                "coordinates": [174.763332, -36.848460 ]
-            },
-            {
-                "type": "Point",
-                "coordinates": [174.763032, -36.848860 ]
+                "coordinates": [174.763032, -36.848860]
             },
         ]
 
