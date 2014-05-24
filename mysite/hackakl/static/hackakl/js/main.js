@@ -229,6 +229,23 @@ function closeActiveRoute(){
 	cancelBusLoadTimer();
 };
 
+// Same as closeActiveRoute, but doesn't affect the controls
+function closeActiveRoute2(){
+
+	// close current route and remove from map
+	if(activeRoute){
+		map.removeLayer(activeRoute);
+		activeRoute = undefined;
+	}
+
+	if(busLayer){
+		map.removeLayer(busLayer);
+	}
+
+	cancelBusLoadTimer();
+};
+
+
 function openRoute(route_code){
 
 	if(!route_code){

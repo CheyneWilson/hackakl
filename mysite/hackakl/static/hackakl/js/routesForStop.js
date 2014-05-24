@@ -10,7 +10,7 @@
         });
     };
 
-    var stopId;  // Cheeky use of global
+    var stopId;  // Cheeky use of semi-global
 
     var updateStopList = function(data){
         var template = $(templateName).html();
@@ -80,9 +80,13 @@
                 var routeCode = $(this).data('routecode');
                 console.log("displaying route " + routeCode)
                 loadRoute(routeCode);
+                loadBusesForRoute(routeCode);
+                startTimerForRoute();
+
+
             } else {
                 var routeCode = $(this).data('routecode');
-                alert(routeCode)
+                closeActiveRoute2();
                 // TODO: hide route
             }
 
@@ -127,3 +131,6 @@
 
 })(jQuery, "#stoplist", "#routeTemplate");
 
+var startTimerForRoute = function(){
+    busReloadTimer = setInterval(loadBusesForRouteCB, busUpdateRate);
+}
