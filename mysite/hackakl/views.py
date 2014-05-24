@@ -12,7 +12,7 @@ import json
 
 import requests
 
-from djgeojson.serializers import Serializer as GeoJSONSerializer
+# from djgeojson.serializers import Serializer as GeoJSONSerializer
 
 from hackakl.dummydata import DUMMY_ROUTE_DATA
 from hackakl.models import Favourite
@@ -169,8 +169,11 @@ class Route(APIView):
                 if r.status_code == HTTP_200_OK:
                     route_data = json.loads(r.content)
                     raw_shape = route_data["response"]
-                    return Response(GeoJSONSerializer().serialize(raw_shape.objects.all(),
-                                                                  use_natural_keys=True))
+
+                    #geo_data = GeoJSONSerializer().serialize(raw_shape.objects.all(),
+                    #                                         use_natural_keys=True)
+                    geo_data = {}
+                    return Response(geo_data)
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -207,11 +210,11 @@ class DummyRtBuses(APIView):
             #TODO: What about direction?
             {
                 "type": "Point",
-                "coordinates": [-36.848460, 174.763332]
+                "coordinates": [174.763332, -36.848460]
             },
             {
                 "type": "Point",
-                "coordinates": [-36.848860, 174.763032]
+                "coordinates": [174.763032, -36.848860]
             },
         ]
 
