@@ -129,7 +129,7 @@ class Route(APIView):
         r = requests.get(trip_url)
 
         if r.status_code == HTTP_200_OK:
-            at_data = json.loads(r.content)
+            at_data = r.json()
             trips = at_data["response"]
 
             shape_ids = set([])
@@ -146,6 +146,7 @@ class Route(APIView):
                     raw_shape = route_data["response"]
 
                     # Format the shap data into geodata
+
                     coords = []
                     for point in raw_shape:
                         coords.append(
@@ -160,7 +161,16 @@ class Route(APIView):
                         "coordinates": coords
                     }
 
-                    return Response(lineString)
+                    resp = {
+                        "type": "Feature",
+                        "geometry": lineString,
+                        "properties": {
+                            "route_code": route_code,
+                            # TODO: Additional properties could be added here
+                        }
+                    }
+
+                    return Response(resp)
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
 
