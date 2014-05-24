@@ -1,14 +1,18 @@
 from django.shortcuts import render
 from django.db.models import Q
 from django.contrib.auth.models import User
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
-     # , HTTP_401_UNAUTHORIZED
+
+from rest_framework.status import HTTP_400_BAD_REQUEST, \
+    HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from rest_framework.permissions import AllowAny  # , IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 import json
+
 import requests
 
+from djgeojson.serializers import Serializer as GeoJSONSerializer
 
 from hackakl.dummydata import DUMMY_ROUTE_DATA
 from hackakl.models import Favourite
@@ -132,6 +136,17 @@ class Route(APIView):
         """
         Returns the geodata for a route
 
+        url_path = 'trips/routeid/'
+        url = BASE_URL + url_path + route_code + '?api_key=' + AT_API_KEY
+
+        request = requests.get(url)
+        if request.status_code == HTTP_200_OK:
+            route_data = request.json()
+        else:
+            raise Http404
+
+        return Response(GeoJSONSerializer().serialize(route_data.objects.all(), use_natural_keys=True)
+
         e.g 2741ML4710
         """
         route_code = '2741ML4710'
@@ -154,33 +169,8 @@ class Route(APIView):
                 if r.status_code == HTTP_200_OK:
                     route_data = json.loads(r.content)
                     raw_shape = route_data["response"]
-
-                    # Format the shap data into geodata
-
-                    coords = []
-                    for point in raw_shape:
-                        coords.append(
-                            [
-                                point["shape_pt_lat"],
-                                point["shape_pt_lon"]
-                            ]
-                        )
-
-                    lineString = {
-                        "type": "LineString",
-                        "coordinates": coords
-                    }
-
-                    resp = {
-                        "type": "Feature",
-                        "geometry": lineString,
-                        "properties": {
-                            "route_code": route_code,
-                            # TODO: Additional properties could be added here
-                        }
-                    }
-
-                    return Response(resp)
+                    return Response(GeoJSONSerializer().serialize(raw_shape.objects.all(),
+                                                                  use_natural_keys=True))
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
 

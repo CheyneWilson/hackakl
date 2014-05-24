@@ -9,6 +9,12 @@ L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 routeLayers = {};
 
+// map.on('layeradd', function(e){
+// 	alert("Layer added: ");
+// });
+
+L.control.layers({}, routeLayers).addTo(map);
+
 function loadRoute() {
 	var routeNum = $("#route-number").val();
 
@@ -16,7 +22,7 @@ function loadRoute() {
 
 	$.ajax({
 	  dataType: "json",
-	  //url: "/static/hackakl/data/bus-route.json",
+	  // url: "/static/hackakl/data/bus-routes.json",
 	  url : routeURL,
 	  data: null,
 	  success: renderRoute
@@ -26,12 +32,15 @@ function loadRoute() {
 function loadBuses(){
 	// expect a feature collection from the json
 
+	var routeNum = $("#route-number").val();
+
+	var routeURL = "/dummybuses/"+routeNum;
+
 	$.ajax({
 	  dataType: "json",
-	  // dummy url = localhost:8000/
-	  url: "/static/hackakl/data/bus-locations.json",
+	  url: routeURL,
 	  data: null,
-	  success: renderRoute
+	  success: renderBuses
 	});
 }
 
@@ -40,25 +49,38 @@ function renderRoute(data, textStatus, jqXHR ){
 
 	if(routeLayers[route_code]){
 		map.removeLayer(routeLayers[route_code]);
-		delete routeLayers[data.properties.route_code];
+		delete routeLayers[route_code];
 	}
 
-	var geoJsonRouteLayer =  L.geoJson(data, {
-		pointToLayer: function (feature, latlng) {
-			return L.marker(latlng);
-		}
-	});
+	var routeStyle = {
+	    "color": "#FF0000",
+	    "weight": 10,
+	    "opacity": 0.85
+	};
 
-	// var geoJsonRouteLayer =  L.geoJson(data);
+	var geoLayer = L.geoJson(data, { style: routeStyle });
+	geoLayer.addTo(map);
 
-	routeLayers[route_code] = geoJsonRouteLayer;
-
-	geoJsonRouteLayer.addTo(map);
-	alert('Route loaded and rendered');
+	routeLayers[route_code] = geoLayer;
 }
 
 function renderBuses(data, textStatus, jqXHR) {
 
+	if(routeLayers['buses']){
+		map.removeLayer(routeLayers['buses']);
+		delete routeLayers[routeLayers['buses']];
+	}
+
+	var routeStyle = {
+	    "color": "#00FF00",
+	    "weight": 10,
+	    "opacity": 0.85
+	};
+
+	var geoLayer = L.geoJson(data, { style: routeStyle });
+	geoLayer.addTo(map);
+
+	routeLayers['buses'] = geoLayer;
 }
 
 
