@@ -25,4 +25,6 @@ urlpatterns = patterns(
     url(r'^dummyroute/(?P<route_code>[0-9a-zA-Z_]+)$', views.DummyRoute.as_view()),
     url(r'^dummybuses/(?P<route_code>[0-9a-zA-Z_]+)$', views.DummyRtBuses.as_view()),
 
+    url(r'^favourites/$', views.favourite, name='favourite'),
+
 )
