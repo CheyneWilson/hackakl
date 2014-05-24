@@ -6,10 +6,14 @@ from rest_framework.permissions import AllowAny  # , IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import json
+import requests
 
 from hackakl.models import Favourite
 from hackakl.serializers import FavouriteModelSerializer
 # Create your views here.
+
+AT_API_KEY = '242e03b2-9f69-4053-acfa-68059fd1797b'
+BASE_URL = 'https://api.at.govt.nz/v1/gtfs/'
 
 
 class ErrResponses(object):
@@ -101,3 +105,19 @@ class EditFavourites(APIView):
             fav.delete()
 
         return get_fav_list(username)
+
+
+class RouteMap(APIView):
+    """
+    Returns a map for a route
+    """
+    #TODO: THIS IS A BAD EXAMPLE - Will tidy up - CW
+
+    def get(self, request, route_code):
+        route_code = '2741ML4710'
+
+        url_path = 'trips/routeid/'
+        url = BASE_URL + url_path + route_code + '?api_key=' + AT_API_KEY
+        r = requests.get(url)
+
+        return Response(r.content)
