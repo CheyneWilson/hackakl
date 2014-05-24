@@ -21,7 +21,47 @@
         };
         $('.checkbox').checkbox();  // Redraw pretty check boxes
         $("#stopName").append(stopId);
+        bindFavouriteStopButtons();
         $("#stoplistWrapper").show(); // Show the list - ignore the hard coding plz
+    }
+
+    var bindFavouriteStopButtons = function(){
+       $(".myFavourite").on('change', function(){
+            if( $(this).is(':checked') ) {
+                var routeCode = $(this).data('routecode');
+                addFavourite(routeCode);
+            } else {
+                var routeCode = $(this).data('routecode');
+                deleteFavourite(routeCode);
+            }
+        });
+    }
+
+    var addFavourite = function(routeCode){
+        var username = 'admin';  // Hardcoded until we have signup
+        var url = '/user/' + username + '/favourite/' + routeCode;
+            $.ajax({
+                dataType: "json",
+                type: "POST",
+                url: url,
+                success: refreshFavourites
+            });
+    }
+
+    var deleteFavourite = function(routeCode){
+        var username = 'admin';  // Hardcoded until we have signup
+        var url = '/user/' + username + '/favourite/' + routeCode;
+            $.ajax({
+                dataType: "json",
+                type: "DELETE",
+                url: url,
+                success: refreshFavourites
+            });
+    }
+
+    var refreshFavourites = function(data){
+        // alert("hello");
+        // TODO:
     }
 
     // From the url, extract the stop number and pass to rest call
