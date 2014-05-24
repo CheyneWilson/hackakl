@@ -29,17 +29,25 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = (
+DEFAULT_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djgeojson',
+)
+
+THIRDPARTY_APPS = (
     'rest_framework_swagger',
+    'django_nose',
+)
+
+PROJECT_APPS = (
     'hackakl',
 )
+
+INSTALLED_APPS = DEFAULT_APPS + THIRDPARTY_APPS + PROJECT_APPS  
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,24 +66,26 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+if DEBUG == True:
+    DATABASES = {
+    	'default': {
+	    'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+    	}
     }
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Pacific/Auckland'
 
 USE_I18N = True
 
 USE_L10N = True
 
+# https://docs.djangoproject.com/en/1.6/howto/templates/
 USE_TZ = True
 
 
@@ -83,3 +93,32 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = (os.path.join(BASE_DIR, 'static'))
+
+# Media files (User uploaded files)
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = (os.path.join(BASE_DIR, 'media'))
+
+# Template directory
+# https://docs.djangoproject.com/en/1.6/howto/templates/
+
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'))
+
+TEMPLATE_LOADERS = (
+    ('django.template.loaders.cached.Loader', (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+    )),
+    )
+
+# Set test runner from Django's default to Nose
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+NOSE_ARGS = [
+   '--cover-package=hackakl',
+   '--with-coverage',
+]

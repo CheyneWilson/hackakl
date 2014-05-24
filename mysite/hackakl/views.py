@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import json
-import geojson
+# import geojson
 
 import requests
 
@@ -200,38 +200,27 @@ class EditFavourites(APIView):
 
 class Route(APIView):
     """
-    Returns a geodata for a route
-    """
+Returns a geodata for a route
+"""
 
     def get(self, request, route_id):
         """
         Returns the geodata for a route
 
-        url_path = 'trips/routeid/'
-        url = BASE_URL + uv1/gtfs/rl_path + route_id + '?api_key=' + AT_API_KEY
-
-        request = requests.get(url)
-        if request.status_code == HTTP_200_OK:
-            route_data = request.json()
-        else:
-            raise Http404
-
-        return Response(GeoJSONSerializer().serialize(route_data.objects.all(), use_natural_keys=True)
-
         e.g 2741ML4710
         """
-        # route_id = '2741ML4710'
         trip_url = BASE_URL + 'v1/gtfs/trips/routeid/' + route_id + '?api_key=' + AT_API_KEY
         r = requests.get(trip_url)
 
         if r.status_code == HTTP_200_OK:
-            at_data = r.json()
+            at_data = json.loads(r.content)
             trips = at_data["response"]
 
             shape_ids = set([])
             for t in trips:
                 shape_ids.add(t["shape_id"])
 
+            # return Response(trips)
             if len(shape_ids) == 1:
                 shape_id = shape_ids.pop()
                 shape_url = BASE_URL + 'v1/gtfs/shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
@@ -240,11 +229,22 @@ class Route(APIView):
                     route_data = json.loads(r.content)
                     raw_shape = route_data["response"]
 
-                    geo_data = geojson.dumps(raw_shape)
+                    # Format the shap data into geodata
+                    coords = []
+                    for point in raw_shape:
+                        coords.append(
+                            [
+                                point["shape_pt_lat"],
+                                point["shape_pt_lon"]
+                            ]
+                        )
 
-                    # FIXEME: This is rendering a string (escaped) version of what we want
-                    # Also, the format is different to what we expect on the front end.
-                    return Response(geo_data)
+                    lineString = {
+                        "type": "LineString",
+                        "coordinates": coords
+                    }
+
+                    return Response(lineString)
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
 
