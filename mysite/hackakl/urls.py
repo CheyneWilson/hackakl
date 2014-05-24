@@ -22,6 +22,7 @@ urlpatterns = patterns(
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     url(r'^realroute/(?P<route_id>[0-9a-zA-Z_]+)$', views.Route.as_view()),
+    url(r'^livevehicles/(?P<route_id>[0-9a-zA-Z_]+)$', views.VehicleData.as_view()),
 
     url(r'^user/(?P<username>[0-9a-zA-Z_]+)/favourite/$', views.ListFavourites.as_view()),
     url(r'^user/(?P<username>[0-9a-zA-Z_]+)/favourite/(?P<route_id>[0-9a-zA-Z_]+)$', views.EditFavourites.as_view()),

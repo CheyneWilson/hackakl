@@ -23,7 +23,7 @@ from hackakl.serializers import FavouriteModelSerializer
 # Create your views here.
 
 AT_API_KEY = '242e03b2-9f69-4053-acfa-68059fd1797b'
-BASE_URL = 'https://api.at.govt.nz/v1/gtfs/'
+BASE_URL = 'https://api.at.govt.nz/'
 
 
 class ErrResponses(object):
@@ -37,6 +37,7 @@ class ErrResponses(object):
     COULD_NOT_LOOKUP_DETAILS = {"error": "Could not lookup details for route"}
     NO_ROUTE_RESULTS = {"error": "No records found for this route"}
     MULTIPLE_ROUTE_RESULTS = {"error": "Multiple records found for this route"}
+    NO_TRIP_DATA = {"error": "No route data for route."}
 
 
 def index(request, route_id=None, stop_code=None):
@@ -83,7 +84,7 @@ class ListRoutesForStop(APIView):
         stop_id -- Four letter stop id, e.g "0002"
         """
 
-        stop_url = BASE_URL + 'routes/stopid/' + stop_id + '?api_key=' + AT_API_KEY
+        stop_url = BASE_URL + 'v1/gtfs/routes/stopid/' + stop_id + '?api_key=' + AT_API_KEY
         r = requests.get(stop_url)
 
         if r.status_code == HTTP_200_OK:
@@ -161,7 +162,7 @@ class EditFavourites(APIView):
 
         # TODO: We could add more details gathered from calling the backend API?
         # knowing this isn't enough, lookup the api for more details
-        route_detail_url = BASE_URL + 'routes/routeId/' + route_id + '?api_key=' + AT_API_KEY
+        route_detail_url = BASE_URL + 'v1/gtfs/routes/routeId/' + route_id + '?api_key=' + AT_API_KEY
         r = requests.get(route_detail_url)
 
         if r.status_code == HTTP_200_OK:
@@ -207,7 +208,7 @@ class Route(APIView):
         Returns the geodata for a route
 
         url_path = 'trips/routeid/'
-        url = BASE_URL + url_path + route_id + '?api_key=' + AT_API_KEY
+        url = BASE_URL + uv1/gtfs/rl_path + route_id + '?api_key=' + AT_API_KEY
 
         request = requests.get(url)
         if request.status_code == HTTP_200_OK:
@@ -220,7 +221,7 @@ class Route(APIView):
         e.g 2741ML4710
         """
         # route_id = '2741ML4710'
-        trip_url = BASE_URL + 'trips/routeid/' + route_id + '?api_key=' + AT_API_KEY
+        trip_url = BASE_URL + 'v1/gtfs/trips/routeid/' + route_id + '?api_key=' + AT_API_KEY
         r = requests.get(trip_url)
 
         if r.status_code == HTTP_200_OK:
@@ -233,7 +234,7 @@ class Route(APIView):
 
             if len(shape_ids) == 1:
                 shape_id = shape_ids.pop()
-                shape_url = BASE_URL + 'shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
+                shape_url = BASE_URL + 'v1/gtfs/shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
                 r = requests.get(shape_url)
                 if r.status_code == HTTP_200_OK:
                     route_data = json.loads(r.content)
@@ -252,6 +253,55 @@ class Route(APIView):
             else:
                 return Response(ErrResponses.MULTIPLE_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
 
+        else:
+            return Response(ErrResponses.ERROR_CALLING_TRIP_API, HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class VehicleData(APIView):
+    """
+    Returns the realtime coordinates for a
+    """
+
+    def get(self, request, route_id):
+        """
+        Returns the realtime coordinates for all vehicles on a route
+
+        e.g 2741ML4710
+        """
+        trip_url = BASE_URL + 'v1/gtfs/trips/routeid/' + route_id + '?api_key=' + AT_API_KEY
+        r = requests.get(trip_url)
+
+        if r.status_code == HTTP_200_OK:
+            at_data = r.json()
+            trips = at_data["response"]
+
+            trip_ids = set([])
+            for t in trips:
+                trip_ids.add(t["trip_id"])
+
+            if len(trip_ids) > 0:
+                # shape_id = shape_ids.pop()
+                trip_ids_string = '2771ML47110857456926,2771ML47110917473326'
+                # trip_ids_string = '%2C'.join(trip_ids)
+                vehicle_url = BASE_URL + '/v1/public/realtime/vehiclelocations?tripid=' + trip_ids_string \
+                    + '&api_key=' + AT_API_KEY
+
+                # return Response(vehicle_url)
+
+                r = requests.get(vehicle_url)
+                if r.status_code == HTTP_200_OK:
+                    raw_data = json.loads(r.content)
+                    trips_temp = raw_data["response"]
+
+                    # geo_data = geojson.dumps(raw_shape)
+
+                    # FIXEME: This is rendering a string (escaped) version of what we want
+                    # Also, the format is different to what we expect on the front end.
+                    return Response(trips_temp)
+                else:
+                    return Response(ErrResponses.NO_TRIP_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response(ErrResponses.NO_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response(ErrResponses.ERROR_CALLING_TRIP_API, HTTP_500_INTERNAL_SERVER_ERROR)
 
