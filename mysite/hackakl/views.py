@@ -1,11 +1,15 @@
 from django.shortcuts import render
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.http import Http404
+
 from rest_framework.status import HTTP_400_BAD_REQUEST  # , HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
 from rest_framework.permissions import AllowAny  # , IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 import json
+
 import requests
 
 from hackakl.models import Favourite
@@ -118,9 +122,15 @@ class RouteMap(APIView):
 
         url_path = 'trips/routeid/'
         url = BASE_URL + url_path + route_code + '?api_key=' + AT_API_KEY
-        r = requests.get(url)
 
-        return Response(r.content)
+        request = requests.get(url)
+        if request.status_code == HTTP_200_OK:
+            route_data = request.json()
+        else:
+            raise Http404
+
+        return Response(GeoJSONSerializer().serialize(route_data.objects.all(), use_natural_keys=True)
+
 
 
 class DummyRoute(APIView):
