@@ -10,8 +10,11 @@ import json
 import requests
 
 
+from hackakl.dummydata import DUMMY_ROUTE_DATA
 from hackakl.models import Favourite
 from hackakl.serializers import FavouriteModelSerializer
+
+
 # Create your views here.
 
 AT_API_KEY = '242e03b2-9f69-4053-acfa-68059fd1797b'
@@ -191,16 +194,8 @@ class DummyRoute(APIView):
         """
         Returns a LineString for a route
         """
-        content = {
-            "type": "LineString",
-            "coordinates": [
-                [100.0, 0.0],
-                [101.0, 1.0],
-                [102.0, 2.0],
-                [103.0, 1.0],
-            ]
-        }
-        return Response(content)
+
+        return Response(DUMMY_ROUTE_DATA)
 
 
 class DummyRtBuses(APIView):
