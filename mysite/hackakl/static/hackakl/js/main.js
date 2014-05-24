@@ -5,21 +5,42 @@ L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
 }).addTo(map);
 
-function searchRoute() {
+function loadRoute() {
 	var routeNum = $("#route-number").val();
+
+	// expect a feature of type LineString that describes a route
 
 	$.ajax({
 	  dataType: "json",
-	  url: "/static/hackakl/data/bus-locations.json",
+	  // dummy url = localhost:8000/
+	  url: "/static/hackakl/data/bus-route.json",
 	  data: null,
 	  success: displayGeoJson
 	});
 };
 
-function displayGeoJson(data, textStatus, jqXHR ){
+function loadBuses(){
+	// expect a feature collection from the json
+
+	$.ajax({
+	  dataType: "json",
+	  // dummy url = localhost:8000/
+	  url: "/static/hackakl/data/bus-locations.json",
+	  data: null,
+	  success: renderRoute
+	});
+}
+
+function renderRoute(data, textStatus, jqXHR ){
 	var layer = L.geoJson(data, {
 		pointToLayer: function (feature, latlng) {
 			return L.marker(latlng);
 		}
 	}).addTo(map);
 }
+
+function renderBuses(data, textStatus, jqXHR) {
+
+}
+
+
