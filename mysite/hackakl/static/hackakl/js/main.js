@@ -19,7 +19,7 @@ var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.
 
 map.addLayer(mapboxTiles);
 
-busUpdateRate = 3000;
+busUpdateRate = 30000;
 
 routes = {};
 activeRoute = undefined;
@@ -36,12 +36,14 @@ function addFavourites(){
 addFavourites();
 
 function toggleBusLayer(){
-	if(busesActive){
+	if(busesActive && busLayer){
 		map.removeLayer(busLayer);
+		$("#btnBusToggle").text("Turn Buses On");
 	} else {
 		if(busLayer){
 			map.addLayer(busLayer)
 		}
+		$("#btnBusToggle").text("Turn Buses Off");
 	}
 	busesActive = !busesActive;
 };
@@ -234,12 +236,12 @@ function openRoute(route_code){
 		return;
 	}
 
+	closeActiveRoute();
+
 	if(activeRoute && activeRoute.route_code === route_code){
-		closeActiveRoute();
 		return;
 	}
 
-	closeActiveRoute();
 
 	// load route data if not already loaded
 	if(!routes[route_code]){
@@ -258,7 +260,6 @@ function openRoute(route_code){
 	}
 
 	loadBusesForRoute(route_code);
-		// loadBusesForRoute(routeCode);
 
 	busReloadTimer = setInterval(loadBusesForRouteCB, busUpdateRate);
 };
