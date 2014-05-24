@@ -186,7 +186,7 @@ function renderBuses(data, textStatus, jqXHR) {
 
 	var iconSize = 45;
 	var busIcon = L.icon({
-	    iconUrl: 'static/hackakl/images/bus.png',
+	    iconUrl: '/static/hackakl/images/bus.png',
 
 	    iconSize:     [iconSize, iconSize], // size of the icon
 	    iconAnchor:   [iconSize, 21], // point of the icon which will correspond to marker's location
