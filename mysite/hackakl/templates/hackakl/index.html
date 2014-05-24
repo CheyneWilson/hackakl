@@ -14,6 +14,7 @@
     <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/bootstrap.min.css' %}">
     <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/font-awesome.min.css' %}">
     <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/bootstrap-additions.css' %}">
+    <link rel="stylesheet" type="text/css" href="{%static 'hackakl/contrib/bootstrap-checkbox/css/bootstrap-checkbox.css' %}">
     <!-- <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/angular-motion.css' %}"> -->
     <!-- <link rel="stylesheet" href=" {%static 'hackakl/css/contrib/libraries.min.css' %}"> -->
 
@@ -104,11 +105,7 @@
                 </div>
                 <!-- sidebar -->
                 <div class="col-xs-6 col-sm-3 sidebar-offcanvas " id="sidebar" role="navigation">
-                    <ul class="nav" id="routelist">
-                      <li class="active"><a href="#">Home</a></li>
-                      <li><a href="#">Link 1</a></li>
-                      <li><a href="#">Link 2</a></li>
-                      <li><a href="#">Link 3</a></li>
+                    <ul class="nav routelist" id="routelist">
                     </ul>
                 </div>
             </div>
@@ -123,16 +120,33 @@
     <!-- <script src="{% static "chess/contrib/require.js"  %}"  data-main="{% static "chess/js/main.js" %}" ></script> -->
     <script type="text/javascript" src="{% static 'hackakl/js/main.js' %}"></script>
 
+    <script type="text/javascript" src="{%static 'hackakl/contrib/bootstrap-checkbox/js/bootstrap-checkbox.js' %}"></script>
+    <script type="text/javascript">
+        // This must be called to make the pretty checkboxes in bootstrap-checkbox
+        $('.checkbox').checkbox();
+    </script>
 
-        <!-- JavaScript jQuery code from Bootply.com editor  -->
-
-        <script type='text/javascript'>
-            $(document).ready(function() {
-                $('[data-toggle=offcanvas]').click(function() {
-                $('.row-offcanvas').toggleClass('active');
-                });
+    <!-- JavaScript jQuery code from Bootply.com editor  -->
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            $('[data-toggle=offcanvas]').click(function() {
+            $('.row-offcanvas').toggleClass('active');
             });
-        </script>
+        });
+    </script>
+
+    <script type="text/template" id="routeTemplate">
+        <li>
+            <a href="{0}">
+            <input id="xx_{0}" class="checkbox large" type="checkbox">
+                <label for="xx_{0}">{1}</label>
+            </a>
+        </li>
+    </script>
+
+    <script type="text/javascript" src="{% static 'hackakl/js/routesForStop.js' %}"></script>
+
+
 <!--
     <script src="//code.angularjs.org/1.2.13/angular.min.js"></script>
     <script src="//code.angularjs.org/1.2.13/angular-animate.min.js"></script>

@@ -115,3 +115,18 @@ body {
 .col-lg-1>div {
     background-color:#ddd;
 }
+
+/* Formatting for the routes list in the sidebar */
+.routelist label {
+    vertical-align: middle;
+    display: table-cell;
+}
+
+.routelist input {
+    margin: 10px;
+    display: table-cell;
+}
+
+.routelist li a {
+    display: table-row;
+}
