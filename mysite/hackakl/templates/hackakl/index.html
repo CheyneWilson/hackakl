@@ -53,40 +53,6 @@
                         <button type="submit" class="btn btn-default" onclick="searchForRoute()">Get Route</button>
                     </div>
 
-                    <!--  {% if user.is_authenticated %}
-                    <div class="navbar-right navbar-form">
-                        <button type="button" class="btn btn-success" data-template="{% static 'chess/modal/newgame.html' %}"
-                             bs-modal="modal" data-placement="center" data-container="#modal-location">
-                            Start New Game
-                        </button>
-                        <button ng-controller="ChangeGame" type="button" class="btn btn-neutral" ng-model="selectedIcon" data-placeholder="Load Game"
-                            ng-options="icon.value as icon.label for icon in icons" bs-select >
-                            Action <span class="caret"></span>
-                        </button>
-                        <button type="button"  class="btn btn-danger" ng-click="logout()">Sign out</button>
-                    </div>
-                    {% else %}
-                    <form class="navbar-form navbar-right" ng-submit="login()">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <input ng-model="formData.username" type="text" placeholder="Username" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <input ng-model="formData.password" type="password" placeholder="Password" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-success">Sign in</button>
-                            <label style="color: white; display: inline-block; padding: 0px 3px 0 2px;">OR</label>
-                            <!- <a href="register" class="btn btn-warning">Register</a> ->
-
-                        <button type="button" class="btn btn-warning" data-template="{% static 'chess/modal/register.html' %}"
-                             bs-modal="modal" data-placement="center" data-container="#modal-location">
-                            Register
-                        </button>
-                        </div>
-                    </form>
-                    {% endif %} -->
-
                 </div><!--/.navbar-collapse -->
             </div>
         </div>
@@ -162,25 +128,6 @@
     </script>
 
     <script type="text/javascript" src="{% static 'hackakl/js/routesForStop.js' %}"></script>
-
-
-<!--
-    <script src="//code.angularjs.org/1.2.13/angular.min.js"></script>
-    <script src="//code.angularjs.org/1.2.13/angular-animate.min.js"></script>
-    <script src="//code.angularjs.org/1.2.13/angular-sanitize.min.js"></script>
-    <script src="//mgcrea.github.io/angular-strap/dist/angular-strap.js" ></script>
-    <script type="text/javascript">
-    <script src="//mgcrea.github.io/angular-strap/dist/angular-strap.tpl.js" ></script>
--->
-
-    <!-- <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script> -->
-<!--
-    <script type="text/javascript" src="{% static 'chess/contrib/angular.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'chess/contrib/angular-animate.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'chess/contrib/angular-sanitize.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'chess/contrib/angular-strap.js' %}"></script>
-    <script type="text/javascript" src="{% static 'chess/contrib/angular-strap.tpl.js' %}"></script>
--->
 
 </body>
 </html>
