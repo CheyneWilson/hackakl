@@ -116,7 +116,7 @@
                         <ul class="nav routelist" id="stoplist"></ul>
                     </div>
                     <h4>Favourite Bus Routes</h3>
-                    <ul class="nav" id="favouriteList"></ul>
+                    <ul class="nav routelist" id="favouriteList"></ul>
                 </div>
             </div>
         </div>
@@ -147,9 +147,17 @@
 
     <script type="text/template" id="routeTemplate">
         <li>
-            <input id="xx_{0}" class="checkbox" type="checkbox">
+            <input id="xx_{0}" class="checkbox showRoute" type="checkbox" data-routecode="{0}">
             <label for="xx_{0}">{1}</label>
             <input id="xx_{0}" class="checkbox star myFavourite" type="checkbox" data-routecode="{0}" >
+        </li>
+    </script>
+
+    <script type="text/template" id="favouriteTemplate">
+        <li>
+            <input id="xx_{0}" class="checkbox showRoute" type="checkbox" data-routecode="{0}">
+            <label for="xx_{0}">{1}</label>
+            <input id="xx_{0}" class="checkbox star myFavourite" type="checkbox" checked="checked" data-routecode="{0}">
         </li>
     </script>
 

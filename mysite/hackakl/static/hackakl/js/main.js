@@ -33,7 +33,7 @@ function addFavourites(){
 	createSidebarRouteElement("Work", "favourite");
 	createSidebarRouteElement("Home", "favourite");
 }
-addFavourites();
+// addFavourites();
 
 function toggleBusLayer(){
 	if(busesActive && busLayer){

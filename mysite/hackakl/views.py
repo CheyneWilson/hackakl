@@ -34,21 +34,24 @@ class ErrResponses(object):
     NO_ROUTE_DATA = {"error": "No route data for route."}
     MULTIPLE_ROUTE_DATA = {"error": "Multiple route maps for route"}
     AT_STOP_SERVICE_NOT_WORKING = {"error": "Problem calling stop service"}
+    COULD_NOT_LOOKUP_DETAILS = {"error": "Could not lookup details for route"}
+    NO_ROUTE_RESULTS = {"error": "No records found for this route"}
+    MULTIPLE_ROUTE_RESULTS = {"error": "Multiple records found for this route"}
 
 
-def index(request, route_code=None, stop_code=None):
+def index(request, route_id=None, stop_code=None):
     """
     Displays the index page
 
     If stop_code is specified, returns the data for the routes that go through that stop.
-    If route_code is specified then returns a default route to display.
+    If route_id is specified then returns a default route to display.
 
     """
 
     # if stop_code is not None:
     #     # Retrive the stop data
 
-    # elif route_code is not None:
+    # elif route_id is not None:
     #     pass
 
     return render(request, 'hackakl/index.html')
@@ -118,7 +121,7 @@ class ListFavourites(APIView):
 class EditFavourites(APIView):
     permission_classes = (AllowAny,)
 
-    def post(self, request, username, route_code):
+    def post(self, request, username, route_id):
         """
         Adds or renames a users' favourite route
 
@@ -151,24 +154,41 @@ class EditFavourites(APIView):
         except User.DoesNotExist:
             return Response(ErrResponses.USER_DOES_NOT_EXIST, status=HTTP_400_BAD_REQUEST)
 
-        fav, created = Favourite.objects.get_or_create(user=user, route_code=route_code)
+        fav, created = Favourite.objects.get_or_create(user=user, route_id=route_id)
         fav.custom_name = custom_name
         fav.priority = priority
         fav.save()
 
         # TODO: We could add more details gathered from calling the backend API?
         # knowing this isn't enough, lookup the api for more details
+        route_detail_url = BASE_URL + 'routes/routeId/' + route_id + '?api_key=' + AT_API_KEY
+        r = requests.get(route_detail_url)
+
+        if r.status_code == HTTP_200_OK:
+            resp = r.json()
+            route_details_list = resp["response"]
+            if len(route_details_list) == 1:
+                route_details = route_details_list[0]
+                fav.route_long_name = route_details["route_long_name"]
+                fav.route_short_name = route_details["route_short_name"]
+                fav.save()
+            elif len(route_details_list) == 0:
+                return Response(ErrResponses.NO_ROUTE_RESULTS, status=HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response(ErrResponses.MULTIPLE_ROUTE_RESULTS, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(ErrResponses.COULD_NOT_LOOKUP_DETAILS, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
         return _fav_list(username)
 
-    def delete(self, request, username, route_code):
+    def delete(self, request, username, route_id):
         """
         Delete a users' favourite route
 
         Note - this is throwing a template error in swagger ...
         """
         try:
-            fav = Favourite.objects.filter(Q(user__username=username)).get(route_code=route_code)
+            fav = Favourite.objects.filter(Q(user__username=username)).get(route_id=route_id)
         except Favourite.DoesNotExist:
             pass  # nothing to do
         else:
@@ -182,12 +202,12 @@ class Route(APIView):
     Returns a geodata for a route
     """
 
-    def get(self, request, route_code):
+    def get(self, request, route_id):
         """
         Returns the geodata for a route
 
         url_path = 'trips/routeid/'
-        url = BASE_URL + url_path + route_code + '?api_key=' + AT_API_KEY
+        url = BASE_URL + url_path + route_id + '?api_key=' + AT_API_KEY
 
         request = requests.get(url)
         if request.status_code == HTTP_200_OK:
@@ -199,8 +219,8 @@ class Route(APIView):
 
         e.g 2741ML4710
         """
-        route_code = '2741ML4710'
-        trip_url = BASE_URL + 'trips/routeid/' + route_code + '?api_key=' + AT_API_KEY
+        # route_id = '2741ML4710'
+        trip_url = BASE_URL + 'trips/routeid/' + route_id + '?api_key=' + AT_API_KEY
         r = requests.get(trip_url)
 
         if r.status_code == HTTP_200_OK:
@@ -219,11 +239,10 @@ class Route(APIView):
                     route_data = json.loads(r.content)
                     raw_shape = route_data["response"]
 
-                    geo_data_string = geojson.dumps(raw_shape)
+                    geo_data = geojson.dumps(raw_shape)
 
-                    # FIXEME: HACK - this is silly restructing it so many times...
-                    geo_data = json.loads(geo_data_string)
-
+                    # FIXEME: This is rendering a string (escaped) version of what we want
+                    # Also, the format is different to what we expect on the front end.
                     return Response(geo_data)
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
@@ -241,7 +260,7 @@ class DummyRoute(APIView):
     """
     A mock used for testing. Returns the dummy data in the format expected by the front end.
     """
-    def get(self, request, route_code):
+    def get(self, request, route_id):
         """
         Returns a LineString for a route
         """
@@ -253,7 +272,7 @@ class DummyRtBuses(APIView):
     """
     A mock used for testing. Returns the dummy data in the format expected by the front end.
     """
-    def get(self, request, route_code):
+    def get(self, request, route_id):
         """
         Returns the coordinates of all buses on a route
         """

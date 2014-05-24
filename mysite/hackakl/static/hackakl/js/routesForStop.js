@@ -22,6 +22,7 @@
         $('.checkbox').checkbox();  // Redraw pretty check boxes
         $("#stopName").append(stopId);
         bindFavouriteStopButtons();
+        bindShowRoute();
         $("#stoplistWrapper").show(); // Show the list - ignore the hard coding plz
     }
 
@@ -59,11 +60,6 @@
             });
     }
 
-    var refreshFavourites = function(data){
-        // alert("hello");
-        // TODO:
-    }
-
     // From the url, extract the stop number and pass to rest call
     var loc = location.pathname;
     var stopMatches = loc.match(/stop\/([0-9]+)/)
@@ -77,3 +73,49 @@
         });
     }
 })(jQuery, "#stoplist", "#routeTemplate");
+
+
+var refreshFavourites = function(){
+    var username = 'admin';
+    var url = '/user/' + username + '/favourite/';
+    $.ajax({
+        dataType: "json",
+        type: "get",
+        url: url,
+        success: updateFavourites
+    });
+}
+
+
+var bindShowRoute = function(){
+    $(".showRoute").on('change', function(){
+        if( $(this).is(':checked') ) {
+            var routeCode = $(this).data('routecode');
+            alert(routeCode)
+            loadRoute(routeCode);
+        } else {
+            var routeCode = $(this).data('routecode');
+            alert(routeCode)
+            // TODO: hide route
+        }
+
+    })
+}
+
+var updateFavourites = function(data){
+    var templateName = "#favouriteTemplate";
+    var target = "#favouriteList";
+    var template = $(templateName).html();
+    $(target).empty();
+    for (i = 0; i < data.length; i++){
+        // Create a list items, this would be so much easier in angular ..
+        var link = data[i].route_id;  // TOOD: Change this to whatever is needed
+        var displayName = data[i].route_long_name;
+        var item = template.format(link, displayName);
+        $(target).append(item);
+    };
+    $('.checkbox').checkbox();  // Redraw pretty check boxes
+    // bindFavouriteStopButtons();
+}
+
+refreshFavourites();
