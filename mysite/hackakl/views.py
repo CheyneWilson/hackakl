@@ -121,3 +121,46 @@ class RouteMap(APIView):
         r = requests.get(url)
 
         return Response(r.content)
+
+
+class DummyRoute(APIView):
+    """
+    A mock used for testing. Returns the dummy data in the format expected by the front end.
+    """
+    def get(self, request, route_code):
+        """
+        Returns a LineString for a route
+        """
+        content = {
+            "type": "LineString",
+            "coordinates": [
+                [100.0, 0.0],
+                [101.0, 1.0],
+                [102.0, 2.0],
+                [103.0, 1.0],
+            ]
+        }
+        return Response(content)
+
+
+class DummyRtBuses(APIView):
+    """
+    A mock used for testing. Returns the dummy data in the format expected by the front end.
+    """
+    def get(self, request, route_code):
+        """
+        Returns the coordinates of all buses on a route
+        """
+        content = [
+            #TODO: What about direction?
+            {
+                "type": "Point",
+                "coordinates": [100.0, 0.0]
+            },
+            {
+                "type": "Point",
+                "coordinates": [100.0, 2.0]
+            },
+        ]
+
+        return Response(content)
