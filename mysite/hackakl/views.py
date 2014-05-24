@@ -195,7 +195,9 @@ class EditFavourites(APIView):
             fav.delete()
 
         return _fav_list(username)
-ass Route(APIView):
+
+
+class Route(APIView):
     """
 Returns a geodata for a route
 """
