@@ -33,9 +33,24 @@ class ErrResponses(object):
     ERROR_CALLING_SHAPE_API = {"error": "Error calling shape API."}
     NO_ROUTE_DATA = {"error": "No route data for route."}
     MULTIPLE_ROUTE_DATA = {"error": "Multiple route maps for route"}
+    AT_STOP_SERVICE_NOT_WORKING = {"error": "Problem calling stop service"}
 
 
-def index(request):
+def index(request, route_code=None, stop_code=None):
+    """
+    Displays the index page
+
+    If stop_code is specified, returns the data for the routes that go through that stop.
+    If route_code is specified then returns a default route to display.
+
+    """
+
+    # if stop_code is not None:
+    #     # Retrive the stop data
+
+    # elif route_code is not None:
+    #     pass
+
     return render(request, 'hackakl/index.html')
 
 
@@ -50,6 +65,40 @@ def _fav_list(username):
     fav_list = Favourite.objects.filter(Q(user__username=username))
     serializer = FavouriteModelSerializer(fav_list, many=True)
     return Response(serializer.data)
+
+
+class ListRoutesForStop(APIView):
+
+    def get(self, request, stop_id):
+        """
+        Returns a list of all the route codes that run though a bus stop.
+
+        This is a transparent call throught to AT's interface. It prevents us needing to use JSONP and allows for
+        caching. This could be moved to a front end sever like nginx or apache. Actually, scratch that, the stop
+        data contains duplicates, see the implementation for more details. A bug shold be raised.
+
+        stop_id -- Four letter stop id, e.g "0002"
+        """
+
+        stop_url = BASE_URL + 'routes/stopid/' + stop_id + '?api_key=' + AT_API_KEY
+        r = requests.get(stop_url)
+
+        if r.status_code == HTTP_200_OK:
+            resp = r.json()
+            stop_data = resp["response"]
+
+            # FIXME: The stop data contains duplicates! Which is gross. CW to follow up
+            seen = set()
+            unique_routes = []
+            for d in stop_data:
+                t = tuple(d.items())
+                if t not in seen:
+                    seen.add(t)
+                    unique_routes.append(d)
+
+            return Response(unique_routes)
+        else:
+            return Response(ErrResponses.AT_STOP_SERVICE_NOT_WORKING, HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ListFavourites(APIView):
@@ -162,7 +211,6 @@ class Route(APIView):
             for t in trips:
                 shape_ids.add(t["shape_id"])
 
-            # return Response(trips)
             if len(shape_ids) == 1:
                 shape_id = shape_ids.pop()
                 shape_url = BASE_URL + 'shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
@@ -173,9 +221,6 @@ class Route(APIView):
 
                     geo_data = geojson.dumps(raw_shape)
 
-                    #geo_data = GeoJSONSerializer().serialize(raw_shape.objects.all(),
-                    #                                         use_natural_keys=True)
-                    #geo_data = {}
                     return Response(geo_data)
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
