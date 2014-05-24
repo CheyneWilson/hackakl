@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.db.models import Q
 from django.contrib.auth.models import User
-from rest_framework.status import HTTP_400_BAD_REQUEST  # , HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+     # , HTTP_401_UNAUTHORIZED
 from rest_framework.permissions import AllowAny  # , IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import json
 import requests
+
 
 from hackakl.models import Favourite
 from hackakl.serializers import FavouriteModelSerializer
@@ -19,6 +21,10 @@ BASE_URL = 'https://api.at.govt.nz/v1/gtfs/'
 class ErrResponses(object):
     USER_DOES_NOT_EXIST = {"error": "User does not exist"}
     INVALID_JSON_DATA = {"error": "Posted data is not valid JSON."}
+    ERROR_CALLING_TRIP_API = {"error": "Error calling trip API."}
+    ERROR_CALLING_SHAPE_API = {"error": "Error calling shape API."}
+    NO_ROUTE_DATA = {"error": "No route data for route."}
+    MULTIPLE_ROUTE_DATA = {"error": "Multiple route maps for route"}
 
 
 def index(request):
@@ -107,20 +113,64 @@ class EditFavourites(APIView):
         return get_fav_list(username)
 
 
-class RouteMap(APIView):
+class Route(APIView):
     """
-    Returns a map for a route
+    Returns a geodata for a route
     """
-    #TODO: THIS IS A BAD EXAMPLE - Will tidy up - CW
 
     def get(self, request, route_code):
+        """
+        Returns the geodata for a route
+
+        e.g 2741ML4710
+        """
         route_code = '2741ML4710'
+        trip_url = BASE_URL + 'trips/routeid/' + route_code + '?api_key=' + AT_API_KEY
+        r = requests.get(trip_url)
 
-        url_path = 'trips/routeid/'
-        url = BASE_URL + url_path + route_code + '?api_key=' + AT_API_KEY
-        r = requests.get(url)
+        if r.status_code == HTTP_200_OK:
+            at_data = json.loads(r.content)
+            trips = at_data["response"]
 
-        return Response(r.content)
+            shape_ids = set([])
+            for t in trips:
+                shape_ids.add(t["shape_id"])
+
+            # return Response(trips)
+            if len(shape_ids) == 1:
+                shape_id = shape_ids.pop()
+                shape_url = BASE_URL + 'shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
+                r = requests.get(shape_url)
+                if r.status_code == HTTP_200_OK:
+                    route_data = json.loads(r.content)
+                    raw_shape = route_data["response"]
+
+                    # Format the shap data into geodata
+                    coords = []
+                    for point in raw_shape:
+                        coords.append(
+                            [
+                                point["shape_pt_lat"],
+                                point["shape_pt_lon"]
+                            ]
+                        )
+
+                    lineString = {
+                        "type": "LineString",
+                        "coordinates": coords
+                    }
+
+                    return Response(lineString)
+                else:
+                    return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
+
+            elif len(shape_ids) == 0:
+                return Response(ErrResponses.NO_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response(ErrResponses.MULTIPLE_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+
+        else:
+            return Response(ErrResponses.ERROR_CALLING_TRIP_API, HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class DummyRoute(APIView):
