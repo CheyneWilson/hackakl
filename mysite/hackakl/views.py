@@ -195,42 +195,30 @@ class EditFavourites(APIView):
             fav.delete()
 
         return _fav_list(username)
-
-
-class Route(APIView):
+ass Route(APIView):
     """
-    Returns a geodata for a route
-    """
+Returns a geodata for a route
+"""
 
-    def get(self, request, route_id):
+    def get(self, request, route_code):
         """
-        Returns the geodata for a route
+Returns the geodata for a route
 
-        url_path = 'trips/routeid/'
-        url = BASE_URL + url_path + route_id + '?api_key=' + AT_API_KEY
-
-        request = requests.get(url)
-        if request.status_code == HTTP_200_OK:
-            route_data = request.json()
-        else:
-            raise Http404
-
-        return Response(GeoJSONSerializer().serialize(route_data.objects.all(), use_natural_keys=True)
-
-        e.g 2741ML4710
-        """
-        # route_id = '2741ML4710'
-        trip_url = BASE_URL + 'trips/routeid/' + route_id + '?api_key=' + AT_API_KEY
+e.g 2741ML4710
+"""
+        route_code = '2741ML4710'
+        trip_url = BASE_URL + 'trips/routeid/' + route_code + '?api_key=' + AT_API_KEY
         r = requests.get(trip_url)
 
         if r.status_code == HTTP_200_OK:
-            at_data = r.json()
+            at_data = json.loads(r.content)
             trips = at_data["response"]
 
             shape_ids = set([])
             for t in trips:
                 shape_ids.add(t["shape_id"])
 
+            # return Response(trips)
             if len(shape_ids) == 1:
                 shape_id = shape_ids.pop()
                 shape_url = BASE_URL + 'shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
@@ -239,11 +227,141 @@ class Route(APIView):
                     route_data = json.loads(r.content)
                     raw_shape = route_data["response"]
 
-                    geo_data = geojson.dumps(raw_shape)
+                    # Format the shap data into geodata
+                    coords = []
+                    for point in raw_shape:
+                        coords.append(
+                            [
+                                point["shape_pt_lat"],
+                                point["shape_pt_lon"]
+                            ]
+                        )
 
-                    # FIXEME: This is rendering a string (escaped) version of what we want
-                    # Also, the format is different to what we expect on the front end.
-                    return Response(geo_data)
+                    lineString = {
+                        "type": "LineString",
+                        "coordinates": coords
+                    }
+
+                    return Response(lineString)
+                else:
+                    return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
+
+            elif len(shape_ids) == 0:
+                return Response(ErrResponses.NO_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response(ErrResponses.MULTIPLE_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+
+        else:
+            return Response(ErrResponses.ERROR_CALLING_TRIP_API, HTTP_500_INTERNAL_SERVER_ERROR)
+
+class Route(APIView):
+    """
+Returns a geodata for a route
+"""
+
+    def get(self, request, route_code):
+        """
+Returns the geodata for a route
+
+e.g 2741ML4710
+"""
+        route_code = '2741ML4710'
+        trip_url = BASE_URL + 'trips/routeid/' + route_code + '?api_key=' + AT_API_KEY
+        r = requests.get(trip_url)
+
+        if r.status_code == HTTP_200_OK:
+            at_data = json.loads(r.content)
+            trips = at_data["response"]
+
+            shape_ids = set([])
+            for t in trips:
+                shape_ids.add(t["shape_id"])
+
+            # return Response(trips)
+            if len(shape_ids) == 1:
+                shape_id = shape_ids.pop()
+                shape_url = BASE_URL + 'shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
+                r = requests.get(shape_url)
+                if r.status_code == HTTP_200_OK:
+                    route_data = json.loads(r.content)
+                    raw_shape = route_data["response"]
+
+                    # Format the shap data into geodata
+                    coords = []
+                    for point in raw_shape:
+                        coords.append(
+                            [
+                                point["shape_pt_lat"],
+                                point["shape_pt_lon"]
+                            ]
+                        )
+
+                    lineString = {
+                        "type": "LineString",
+                        "coordinates": coords
+                    }
+
+                    return Response(lineString)
+                else:
+                    return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
+
+            elif len(shape_ids) == 0:
+                return Response(ErrResponses.NO_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response(ErrResponses.MULTIPLE_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+
+        else:
+            return Response(ErrResponses.ERROR_CALLING_TRIP_API, HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class Route(APIView):
+    """
+Returns a geodata for a route
+"""
+
+    def get(self, request, route_code):
+        """
+Returns the geodata for a route
+
+e.g 2741ML4710
+"""
+        route_code = '2741ML4710'
+        trip_url = BASE_URL + 'trips/routeid/' + route_code + '?api_key=' + AT_API_KEY
+        r = requests.get(trip_url)
+
+        if r.status_code == HTTP_200_OK:
+            at_data = json.loads(r.content)
+            trips = at_data["response"]
+
+            shape_ids = set([])
+            for t in trips:
+                shape_ids.add(t["shape_id"])
+
+            # return Response(trips)
+            if len(shape_ids) == 1:
+                shape_id = shape_ids.pop()
+                shape_url = BASE_URL + 'shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
+                r = requests.get(shape_url)
+                if r.status_code == HTTP_200_OK:
+                    route_data = json.loads(r.content)
+                    raw_shape = route_data["response"]
+
+                    # Format the shap data into geodata
+                    coords = []
+                    for point in raw_shape:
+                        coords.append(
+                            [
+                                point["shape_pt_lat"],
+                                point["shape_pt_lon"]
+                            ]
+                        )
+
+                    lineString = {
+                        "type": "LineString",
+                        "coordinates": coords
+                    }
+
+                    return Response(lineString)
                 else:
                     return Response(ErrResponses.ERROR_CALLING_SHAPE_API, HTTP_500_INTERNAL_SERVER_ERROR)
 
