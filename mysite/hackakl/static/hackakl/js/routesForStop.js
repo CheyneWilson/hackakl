@@ -116,7 +116,7 @@
         var loc = location.pathname;
         var stopMatches = loc.match(/stop\/([0-9]+)/)
         if (stopMatches != null){
-            var stopId = stopMatches[1];
+            stopId = stopMatches[1];
             var url = '/stopdata/' + stopId;
             $.ajax({
                 dataType: "json",
