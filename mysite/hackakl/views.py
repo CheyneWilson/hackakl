@@ -308,7 +308,7 @@ class VehicleData(APIView):
                 #         return Response(error_msg)
 
                 #     trips_temp = raw_data["response"], vehicle_url
-                trips_temp = []
+                vehicle_list = []
                 i = 0
                 for trip_id_string in trip_ids:
                     vehicle_url = BASE_URL + 'v1/public/realtime/vehiclelocations?tripid=' + trip_id_string \
@@ -328,14 +328,21 @@ class VehicleData(APIView):
                             vehicle_pos = vehicle["position"]
                             # trip_details = trip_data["trip"]
                             coords = [vehicle_pos["longitude"], vehicle_pos["latitude"]]
-                            vehicle_id = vehicle["vehicle"]["id"]
+                            # vehicle_id = vehicle["vehicle"]["id"]  # TODO: Change to ... bus nmber!
+                            vehicle_name = "667"
 
                             resp = {
-                                "coords": coords,
-                                "vehicle_id": vehicle_id
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": coords,
+                                },
+                                "properties": {
+                                    "bus_number": vehicle_name
+                                }
                             }
 
-                            trips_temp.append(resp)
+                            vehicle_list.append(resp)
 
                     else:
                         return Response(ErrResponses.NO_TRIP_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
@@ -345,7 +352,15 @@ class VehicleData(APIView):
                     if i > 10:
                         break
 
-                return Response(trips_temp)
+                wrapper = {
+                    "type": "FeatureCollection",
+                    "features": vehicle_list,
+                    "properties": {
+                        "route_code": route_id
+                    }
+                }
+
+                return Response(wrapper)
             else:
                 return Response(ErrResponses.NO_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
         else:
@@ -378,32 +393,32 @@ class DummyRtBuses(APIView):
         """
         content = [
             {
-              "type": "FeatureCollection",
-              "features": [
-                {
-                  "type": "Feature",
-                  "geometry": {
-                    "type": "Point",
-                    "coordinates": [174.763332, -36.848460],
-                  },
-                  "properties": {
-                    "bus_number": "227"
-                  }
-                },
-                {
-                  "type": "Feature",
-                  "geometry": {
-                    "type": "Point",
-                    "coordinates": [174.763032, -36.848860],
-                  },
-                  "properties": {
-                    "bus_number": "224"
-                  }
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [174.763332, -36.848460],
+                        },
+                        "properties": {
+                            "bus_number": "227"
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [174.763032, -36.848860],
+                        },
+                        "properties": {
+                            "bus_number": "224"
+                        }
+                    }
+                ],
+                "properties": {
+                    "route_code": "2741ML4710"
                 }
-              ],
-              "properties": {
-                "route_code": "2741ML4710"
-              }
             }
         ]
 
