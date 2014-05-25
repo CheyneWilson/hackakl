@@ -290,26 +290,62 @@ class VehicleData(APIView):
                 trip_ids.add(t["trip_id"])
 
             if len(trip_ids) > 0:
-                # shape_id = shape_ids.pop()
-                trip_ids_string = '2771ML47110857456926,2771ML47110917473326'
-                # trip_ids_string = '%2C'.join(trip_ids)
-                vehicle_url = BASE_URL + '/v1/public/realtime/vehiclelocations?tripid=' + trip_ids_string \
-                    + '&api_key=' + AT_API_KEY
 
-                # return Response(vehicle_url)
+                # FIXME: If one of the trip id's is null, returns a null pointer on server side ...
+                # trip_ids_string = '2771ML47110857456926,2771ML47110917473326'
+                # trip_ids_string = ','.join(trip_ids)
+                # vehicle_url = BASE_URL + 'v1/public/realtime/vehiclelocations?tripid=' + trip_ids_string \
+                #     + '&api_key=' + AT_API_KEY
+                # r = requests.get(vehicle_url)
 
-                r = requests.get(vehicle_url)
-                if r.status_code == HTTP_200_OK:
-                    raw_data = json.loads(r.content)
-                    trips_temp = raw_data["response"]
+                # if r.status_code == HTTP_200_OK:
+                #     raw_data = json.loads(r.content)
 
-                    # geo_data = geojson.dumps(raw_shape)
+                #     # is it an error?
+                #     status = raw_data["status"]
+                #     if status == "Error":
+                #         error_msg = raw_data["error"]
+                #         return Response(error_msg)
 
-                    # FIXEME: This is rendering a string (escaped) version of what we want
-                    # Also, the format is different to what we expect on the front end.
-                    return Response(trips_temp)
-                else:
-                    return Response(ErrResponses.NO_TRIP_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+                #     trips_temp = raw_data["response"], vehicle_url
+                trips_temp = []
+                i = 0
+                for trip_id_string in trip_ids:
+                    vehicle_url = BASE_URL + 'v1/public/realtime/vehiclelocations?tripid=' + trip_id_string \
+                        + '&api_key=' + AT_API_KEY
+
+                    r = requests.get(vehicle_url)
+                    if r.status_code == HTTP_200_OK:
+                        raw_data = json.loads(r.content)
+                        raw_resp = raw_data["response"]
+                        if len(raw_resp) == 0:  # Not data for this trip ..
+                            continue
+                        raw_trip_data = raw_resp["entity"]
+                        if len(raw_trip_data) > 0:
+                            trip_data = raw_trip_data[0]  # There should only be one!
+
+                            vehicle = trip_data["vehicle"]
+                            vehicle_pos = vehicle["position"]
+                            # trip_details = trip_data["trip"]
+                            coords = [vehicle_pos["longitude"], vehicle_pos["latitude"]]
+                            vehicle_id = vehicle["vehicle"]["id"]
+
+                            resp = {
+                                "coords": coords,
+                                "vehicle_id": vehicle_id
+                            }
+
+                            trips_temp.append(resp)
+
+                    else:
+                        return Response(ErrResponses.NO_TRIP_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
+
+                    # Prevent running too much!
+                    i += 1
+                    if i > 10:
+                        break
+
+                return Response(trips_temp)
             else:
                 return Response(ErrResponses.NO_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
         else:
