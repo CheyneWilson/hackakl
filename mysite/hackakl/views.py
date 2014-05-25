@@ -23,6 +23,7 @@ from hackakl.serializers import FavouriteModelSerializer
 # Create your views here.
 
 AT_API_KEY = '242e03b2-9f69-4053-acfa-68059fd1797b'
+BACKUP_AT_API_KEY = '0784648a-8a58-444b-a1ff-38ab9e8f8e8b'
 BASE_URL = 'https://api.at.govt.nz/'
 
 
