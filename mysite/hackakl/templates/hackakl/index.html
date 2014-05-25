@@ -42,15 +42,15 @@
                         Favourite Routes
                    </button>
 
-                    <a class="navbar-brand" href="#">Where are we going?</a>
+                    <a class="navbar-brand" href="/">Where are we going?</a>
                 </div>
 
                <div ng-controller="Login" class="navbar-collapse collapse">
                     <div class="navbar-right navbar-form">
                         <div class="form-group">
-                          <input id="route-number" type="text" class="form-control" placeholder="Search">
+                          <input id="stop-code" type="text" class="form-control" placeholder="0008">
                         </div>
-                        <button type="submit" class="btn btn-default" onclick="searchForRoute()">Get Route</button>
+                        <button type="submit" class="btn btn-default" onclick="searchForStop()">Find Stop</button>
                     </div>
 
                 </div><!--/.navbar-collapse -->
@@ -72,7 +72,6 @@
                 </div>
                 <!-- sidebar -->
                 <div class="col-xs-6 col-sm-3 sidebar-offcanvas " id="sidebar" role="navigation">
-                    <button id="btnBusToggle" type="submit" class="btn btn-default" onclick="toggleBusLayer()">Turn Buses Off</button>
                     <div id="stoplistWrapper" style="display:none;">
                         <h4>Buses that stop at <span id="stopName"></span></h3>
                         <div class="routelistheader">
@@ -126,8 +125,6 @@
             <input id="fv_{0}" class="checkbox star myFavourite" type="checkbox" checked="checked" data-routecode="{0}">
         </li>
     </script>
-
-    <script type="text/javascript" src="{% static 'hackakl/js/routesForStop.js' %}"></script>
 
 </body>
 </html>
