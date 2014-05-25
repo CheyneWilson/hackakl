@@ -360,8 +360,10 @@ class VehicleData(APIView):
                         "route_code": route_id
                     }
                 }
+                response = Response(wrapper)
+                response['Cache-Control'] = 'no-cache'
 
-                return Response(wrapper)
+                return response
             else:
                 return Response(ErrResponses.NO_ROUTE_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
         else:
