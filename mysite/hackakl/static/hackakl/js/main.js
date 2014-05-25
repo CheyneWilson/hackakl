@@ -106,11 +106,7 @@
         $(".showRoute").on('change', function(){
             if( $(this).is(':checked') ) {
                 var routeCode = $(this).data('routecode');
-                console.log("displaying route " + routeCode)
-                // loadRoute(routeCode);
-                // loadBusesForRoute(routeCode);
                 openRoute(routeCode);
-                startTimerForRoute();
             } else {
                 var route_code = $(this).data('routecode');
                 closeRoute(route_code);
@@ -157,43 +153,6 @@
         createSidebarRouteElement("Home", "favourite");
     }
 
-    var findSidebarItem = function(route_code){
-        var si = undefined;
-
-        $("#routelist").find('a').each(function(){
-            // cache jquery var
-            var crd = $(this).data("route_code");
-            if(crd === route_code){
-                si = $(this).parent("li");
-                return false;
-            }
-        });
-
-        return si;
-    };
-
-    var createSidebarRouteElement = function(route_code, classes){
-        var li = $('<li>');
-        var a = $('<a>');
-        a.text(route_code);
-
-        if(classes){
-            li.addClass(classes);
-        }
-
-        a.data("route_code", route_code);
-
-        $('#favouriteList').append(
-            li.append(a));
-
-        a.click(function(){
-            var route_code = a.data("route_code");
-            openRoute(route_code);
-        });
-
-        return li;
-    };
-
     var cancelBusLoadTimer = function(){
         if(busReloadTimer){
             clearInterval(busReloadTimer);
@@ -226,33 +185,6 @@
           data: null,
           success: renderBuses
         });
-    };
-
-    var setActiveRoute = function(layer){
-        activeRoute = layer;
-        route_code = layer.route_code;
-    };
-
-    var renderRoute = function(data, textStatus, jqXHR ){
-        var route_code = data.properties.route_code;
-
-        if(routes[route_code]){
-            map.removeLayer(routes[route_code]);
-        }
-
-        var routeStyle = {
-            "color": "#FF0000",
-            "weight": 10,
-            "opacity": 0.85
-        };
-
-        var geoLayer = L.geoJson(data, { style: routeStyle });
-        geoLayer.addTo(map);
-
-        geoLayer.route_code = route_code;
-
-        routes[route_code] = geoLayer;
-        activeRoutes[route_code] = geoLayer;
     };
 
     var onEachBus = function(feature, layer) {
@@ -292,18 +224,42 @@
             },
             onEachFeature: onEachBus
         });
+
         busLayers[route_code] = geoLayer;
         geoLayer.route_code = route_code;
 
-        busLayers[route_code].addTo(map);
+        if(activeRoutes[route_code]){
+        	busLayers[route_code].addTo(map);
+        }
+
+    };
+
+    var renderRoute = function(data, textStatus, jqXHR ){
+        var route_code = data.properties.route_code;
+
+        if(routes[route_code]){
+            map.removeLayer(routes[route_code]);
+        }
+
+        var routeStyle = {
+            "color": "#FF0000",
+            "weight": 10,
+            "opacity": 0.85
+        };
+
+        var geoLayer = L.geoJson(data, { style: routeStyle });
+        geoLayer.route_code = route_code;
+        routes[route_code] = geoLayer;
+
+        if(!activeRoutes[route_code]){
+        	return;
+        }
+
+        activeRoutes[route_code] = geoLayer;
+        activeRoutes[route_code].addTo(map);
     };
 
     var closeRoute = function(route_code){
-    	var si = findSidebarItem(route_code);
-
-    	if(!!si){	
-    		si.removeClass("active");
-    	}
 
     	if(activeRoutes[route_code]){
     		map.removeLayer(activeRoutes[route_code]);
@@ -326,22 +282,12 @@
 
         // load route data if not already loaded
         if(!routes[route_code]){
+        	activeRoutes[route_code] = true;
             loadRoute(route_code);
         } else {
         	// show route layer
         	activeRoutes[route_code] = routes[route_code];
         	activeRoutes[route_code].addTo(map);
-        }
-
-        // add route to sidebar if not already there.
-        var si = findSidebarItem(route_code);
-        if(!si){
-            si = createSidebarRouteElement(route_code);
-        }
-
-        // mark as active route
-        if(si !== undefined){
-            si.addClass("active");
         }
 
         busRoutes[route_code] = false;
