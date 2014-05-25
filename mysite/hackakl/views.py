@@ -377,15 +377,34 @@ class DummyRtBuses(APIView):
         Returns the coordinates of all buses on a route
         """
         content = [
-            #TODO: What about direction?
             {
-                "type": "Point",
-                "coordinates": [174.763332, -36.848460]
-            },
-            {
-                "type": "Point",
-                "coordinates": [174.763032, -36.848860]
-            },
+              "type": "FeatureCollection",
+              "features": [
+                {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "Point",
+                    "coordinates": [174.763332, -36.848460],
+                  },
+                  "properties": {
+                    "bus_number": "227"
+                  }
+                },
+                {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "Point",
+                    "coordinates": [174.763032, -36.848860],
+                  },
+                  "properties": {
+                    "bus_number": "224"
+                  }
+                }
+              ],
+              "properties": {
+                "route_code": "2741ML4710"
+              }
+            }
         ]
 
         return Response(content)
