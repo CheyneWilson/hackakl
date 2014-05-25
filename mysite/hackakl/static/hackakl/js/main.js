@@ -107,8 +107,9 @@
             if( $(this).is(':checked') ) {
                 var routeCode = $(this).data('routecode');
                 console.log("displaying route " + routeCode)
-                loadRoute(routeCode);
-                loadBusesForRoute(routeCode);
+                // loadRoute(routeCode);
+                // loadBusesForRoute(routeCode);
+                openRoute(routeCode);
                 startTimerForRoute();
             } else {
                 var route_code = $(this).data('routecode');
@@ -203,8 +204,7 @@
     var loadRoute = function(route_code) {
 
         console.log("loadRoute: "+route_code);
-
-        var routeURL = "/realroute/"+route_code;
+    	var routeURL = "/realroute/"+route_code;
 
         $.ajax({
           dataType: "json",
@@ -213,10 +213,6 @@
           success: renderRoute
         });
     };
-
-    var loadBusesForRouteCB = function(){
-        refreshBuses();
-    }
 
     var loadBusesForRoute = function(route_code){
 
@@ -242,7 +238,6 @@
 
         if(routes[route_code]){
             map.removeLayer(routes[route_code]);
-            delete routes[route_code];
         }
 
         var routeStyle = {
@@ -272,6 +267,8 @@
     var renderBuses = function(data, textStatus, jqXHR) {
 
     	var route_code = data.properties.route_code;
+
+    	console.log("renderBuses: Found "+data.features.length+" buses for route "+route_code);
 
         // replace existing bus layer if already exists.
         if(busLayers[route_code]){
@@ -330,6 +327,10 @@
         // load route data if not already loaded
         if(!routes[route_code]){
             loadRoute(route_code);
+        } else {
+        	// show route layer
+        	activeRoutes[route_code] = routes[route_code];
+        	activeRoutes[route_code].addTo(map);
         }
 
         // add route to sidebar if not already there.
@@ -343,13 +344,14 @@
             si.addClass("active");
         }
 
-        loadBusesForRoute(route_code);
+        busRoutes[route_code] = false;
 
-        busReloadTimer = setInterval(loadBusesForRouteCB, busUpdateRate);
+        loadBusesForRoute(route_code);
     };
 
-    var startTimerForRoute = function(){
-	    busReloadTimer = setInterval(loadBusesForRouteCB, busUpdateRate);
+    var startBusReloadTimer = function(){
+    	clearInterval(busReloadTimer);
+	    busReloadTimer = setInterval(refreshBuses, busUpdateRate);
 	};
 
     var setupMap = function(){
@@ -372,11 +374,12 @@
         map.addLayer(mapboxTiles);
     }
 
-    $("#route-number").val("Test");
+    $("#stop-code").val("0008");
 
     setupMap();
     refreshFavourites();
     displayRoutesForCurrentStop();
+    startBusReloadTimer();
 
 })(jQuery, "#stoplist", "#routeTemplate");
 
