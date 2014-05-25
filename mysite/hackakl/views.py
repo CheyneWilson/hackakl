@@ -314,6 +314,11 @@ class VehicleData(APIView):
                     vehicle_url = BASE_URL + 'v1/public/realtime/vehiclelocations?tripid=' + trip_id_string \
                         + '&api_key=' + AT_API_KEY
 
+                    # Prevent running too much!
+                    i += 1
+                    if i > 10:
+                        break
+
                     r = requests.get(vehicle_url)
                     if r.status_code == HTTP_200_OK:
                         raw_data = json.loads(r.content)
@@ -329,7 +334,7 @@ class VehicleData(APIView):
                             # trip_details = trip_data["trip"]
                             coords = [vehicle_pos["longitude"], vehicle_pos["latitude"]]
                             # vehicle_id = vehicle["vehicle"]["id"]  # TODO: Change to ... bus nmber!
-                            vehicle_name = "667"
+                            vehicle_name = "667"  # TODO: Change to ... bus nmber!
 
                             resp = {
                                 "type": "Feature",
@@ -346,11 +351,6 @@ class VehicleData(APIView):
 
                     else:
                         return Response(ErrResponses.NO_TRIP_DATA, HTTP_500_INTERNAL_SERVER_ERROR)
-
-                    # Prevent running too much!
-                    i += 1
-                    if i > 10:
-                        break
 
                 wrapper = {
                     "type": "FeatureCollection",
