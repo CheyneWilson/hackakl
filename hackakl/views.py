@@ -87,7 +87,7 @@ class ListRoutesForStop(APIView):
         """
 
         stop_url = BASE_URL + 'v1/gtfs/routes/stopid/' + stop_id + '?api_key=' + AT_API_KEY
-        r = requests.get(stop_url)
+        r = requests.get(stop_url, verify=False)
 
         if r.status_code == HTTP_200_OK:
             resp = r.json()
@@ -165,7 +165,7 @@ class EditFavourites(APIView):
         # TODO: We could add more details gathered from calling the backend API?
         # knowing this isn't enough, lookup the api for more details
         route_detail_url = BASE_URL + 'v1/gtfs/routes/routeId/' + route_id + '?api_key=' + AT_API_KEY
-        r = requests.get(route_detail_url)
+        r = requests.get(route_detail_url, verify=False)
 
         if r.status_code == HTTP_200_OK:
             resp = r.json()
@@ -212,10 +212,10 @@ class Route(APIView):
         e.g 2741ML4710
         """
         trip_url = BASE_URL + 'v1/gtfs/trips/routeid/' + route_id + '?api_key=' + AT_API_KEY
-        r = requests.get(trip_url)
+        r = requests.get(trip_url, verify=False)
 
         if r.status_code == HTTP_200_OK:
-            at_data = json.loads(r.content)
+            at_data = r.json()
             trips = at_data["response"]
 
             shape_ids = set([])
@@ -226,9 +226,9 @@ class Route(APIView):
             if len(shape_ids) == 1:
                 shape_id = shape_ids.pop()
                 shape_url = BASE_URL + 'v1/gtfs/shapes/shapeId/' + shape_id + '?api_key=' + AT_API_KEY
-                r = requests.get(shape_url)
+                r = requests.get(shape_url, verify=False)
                 if r.status_code == HTTP_200_OK:
-                    route_data = json.loads(r.content)
+                    route_data = r.json()
                     raw_shape = route_data["response"]
 
                     # Format the shap data into geodata
@@ -280,7 +280,7 @@ class VehicleData(APIView):
         e.g 2741ML4710
         """
         trip_url = BASE_URL + 'v1/gtfs/trips/routeid/' + route_id + '?api_key=' + AT_API_KEY
-        r = requests.get(trip_url)
+        r = requests.get(trip_url, verify=False)
 
         if r.status_code == HTTP_200_OK:
             at_data = r.json()
@@ -297,7 +297,7 @@ class VehicleData(APIView):
                 # trip_ids_string = ','.join(trip_ids)
                 # vehicle_url = BASE_URL + 'v1/public/realtime/vehiclelocations?tripid=' + trip_ids_string \
                 #     + '&api_key=' + AT_API_KEY
-                # r = requests.get(vehicle_url)
+                # r = requests.get(vehicle_url, verify=False)
 
                 # if r.status_code == HTTP_200_OK:
                 #     raw_data = json.loads(r.content)
@@ -320,9 +320,9 @@ class VehicleData(APIView):
                     if i > 10:
                         break
 
-                    r = requests.get(vehicle_url)
+                    r = requests.get(vehicle_url, verify=False)
                     if r.status_code == HTTP_200_OK:
-                        raw_data = json.loads(r.content)
+                        raw_data = r.json()
                         raw_resp = raw_data["response"]
                         if len(raw_resp) == 0:  # Not data for this trip ..
                             continue
@@ -330,7 +330,8 @@ class VehicleData(APIView):
                         if len(raw_trip_data) > 0:
                             trip_data = raw_trip_data[0]  # There should only be one!
 
-                            vehicle = trip_data["vehicle"]
+                            vehicle = trip_data["vehicle"]  # TODO: Sometimes this fails, building tests would be the
+                                                            # Correct way to understand the API properly
                             vehicle_pos = vehicle["position"]
                             # trip_details = trip_data["trip"]
                             coords = [vehicle_pos["longitude"], vehicle_pos["latitude"]]
