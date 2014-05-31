@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = '9rlf#hb@5^58a^wgphyxi24*#eg)4o$vfx-_e65ra(46sca#x4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -28,7 +28,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 DEFAULT_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,7 +46,8 @@ PROJECT_APPS = (
     'hackakl',
 )
 
-INSTALLED_APPS = DEFAULT_APPS + THIRDPARTY_APPS + PROJECT_APPS  
+INSTALLED_APPS = DEFAULT_APPS + THIRDPARTY_APPS + PROJECT_APPS
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -66,13 +66,19 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-if DEBUG == True:
+if DEBUG is True:
     DATABASES = {
-    	'default': {
-	    'ENGINE': 'django.db.backends.sqlite3',
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
-    	}
+        }
     }
+else:
+    # TODO: Congigure PostgreSQL
+    raise NotImplementedError("Production database support not implemented")
+
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config()
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -88,13 +94,14 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/1.6/howto/templates/
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
+STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
-STATIC_ROOT = (os.path.join(BASE_DIR, 'static'))
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 # Media files (User uploaded files)
 
@@ -109,16 +116,22 @@ TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'))
 
 TEMPLATE_LOADERS = (
     ('django.template.loaders.cached.Loader', (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
     )),
-    )
+)
 
 # Set test runner from Django's default to Nose
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 NOSE_ARGS = [
-   '--cover-package=hackakl',
-   '--with-coverage',
+    '--cover-package=hackakl',
+    '--with-coverage',
 ]
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
