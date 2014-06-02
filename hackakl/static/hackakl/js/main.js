@@ -12,9 +12,8 @@
 
     var map;
     var stopId;  // Cheeky use of semi-global
-
     var busUpdateRate = 30000;
-    
+
     var routes = {};
     var activeRoutes = {};
 
@@ -290,7 +289,7 @@
         	activeRoutes[route_code].addTo(map);
         }
 
-        busRoutes[route_code] = false;
+        busRoutes[route_code] = true;
 
         loadBusesForRoute(route_code);
     };
